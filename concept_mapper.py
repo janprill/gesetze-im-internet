@@ -69,12 +69,6 @@ class ConceptMapper:
                 if normalized_term in self.single_word_terms:
                     found_concepts.add(self.single_word_terms[normalized_term])
 
-            # Fallback check for "Verantwortlich..." starts
-            if lemma.startswith("verantwortlich") and "gdpr:Controller" not in found_concepts:
-                 # Heuristic: if it's a noun (mostly), but Spacy might tag it as ADJ.
-                 # Let's check strict start matching for this specific critical term if we haven't found it.
-                 pass
-
         # 2. Check for multi-word phrases
         # We normalize the doc to a string of lemmas for searching
         doc_lemmas = " ".join([t.lemma_.lower() for t in doc])

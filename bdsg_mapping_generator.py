@@ -18,7 +18,7 @@ class BDSGMappingGenerator:
             "xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "xs": "http://www.w3.org/2001/XMLSchema",
             # Prefixes used in content
-            "GDPR": "/akn/eu/act/regulation/2018-05-25/eng@2018-05-25/!main#",
+            "gdpr": "/akn/eu/act/regulation/2018-05-25/eng@2018-05-25/!main#",
             "prOnto": "https://w3id.org/ontology/pronto#",
             "dapreco": "http://www.liviorobaldo.com/dapreco#",
             "rioOnto": "http://www.liviorobaldo.com/rioOnto#"
@@ -38,7 +38,7 @@ class BDSGMappingGenerator:
         root = ET.Element(f"{{{lrml}}}LegalRuleML", nsmap=self.NSMAP)
 
         # Add Prefix definitions
-        self._add_prefix(root, "GDPR", self.NSMAP["GDPR"])
+        self._add_prefix(root, "gdpr", self.NSMAP["gdpr"])
         self._add_prefix(root, "prOnto", self.NSMAP["prOnto"])
         self._add_prefix(root, "dapreco", self.NSMAP["dapreco"])
         # Add a prefix for BDSG itself? Not strictly defined in prompt, but useful.
