@@ -10,6 +10,12 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
+              <ruleml:Rel iri="gdpr:FilingSystem"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
               <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
@@ -17,12 +23,6 @@
           <ruleml:Atom>
             <ruleml:Op>
               <ruleml:Rel iri="gdpr:PersonalData"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
-              <ruleml:Rel iri="gdpr:FilingSystem"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -70,7 +70,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -82,7 +82,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -186,13 +186,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -322,12 +322,6 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
               <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
@@ -335,6 +329,12 @@
           <ruleml:Atom>
             <ruleml:Op>
               <ruleml:Rel iri="gdpr:SupervisoryAuthority"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -456,13 +456,7 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -474,13 +468,19 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -528,13 +528,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -562,13 +562,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -650,13 +650,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:SupervisoryAuthority"/>
+              <ruleml:Rel iri="gdpr:Representative"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Representative"/>
+              <ruleml:Rel iri="gdpr:SupervisoryAuthority"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -718,13 +718,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:SupervisoryAuthority"/>
+              <ruleml:Rel iri="gdpr:Representative"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Representative"/>
+              <ruleml:Rel iri="gdpr:SupervisoryAuthority"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1000,13 +1000,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1056,25 +1056,25 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
               <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
               <ruleml:Rel iri="gdpr:Controller"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1180,13 +1180,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:ThirdParty"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:ThirdParty"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1214,13 +1214,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:ThirdParty"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:ThirdParty"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1296,13 +1296,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1330,13 +1330,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1398,13 +1398,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1426,13 +1426,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:FilingSystem"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:FilingSystem"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1454,25 +1454,25 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
               <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
               <ruleml:Rel iri="gdpr:Controller"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1548,13 +1548,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1900,13 +1900,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:FilingSystem"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:FilingSystem"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -1934,13 +1934,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2038,6 +2038,12 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
+              <ruleml:Rel iri="gdpr:DataConcerningHealth"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
               <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
@@ -2045,12 +2051,6 @@
           <ruleml:Atom>
             <ruleml:Op>
               <ruleml:Rel iri="gdpr:Controller"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
-              <ruleml:Rel iri="gdpr:DataConcerningHealth"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2078,7 +2078,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2090,7 +2090,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2138,13 +2138,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2166,13 +2166,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2356,13 +2356,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2390,13 +2390,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2424,7 +2424,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2436,7 +2436,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2458,19 +2458,7 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:GeneticData"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
               <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Recipient"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2482,13 +2470,19 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
+              <ruleml:Rel iri="gdpr:Controller"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
               <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:DataConcerningHealth"/>
+              <ruleml:Rel iri="gdpr:Recipient"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2500,13 +2494,19 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:BiometricData"/>
+              <ruleml:Rel iri="gdpr:DataConcerningHealth"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:GeneticData"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
+              <ruleml:Rel iri="gdpr:BiometricData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2584,7 +2584,7 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Pseudonymisation"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2596,7 +2596,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Pseudonymisation"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2624,13 +2624,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2652,13 +2652,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:ThirdParty"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:ThirdParty"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2686,25 +2686,25 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
               <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
               <ruleml:Rel iri="gdpr:Controller"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2746,13 +2746,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2774,13 +2774,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2836,7 +2836,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2848,7 +2848,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -2964,13 +2964,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3078,13 +3078,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3240,13 +3240,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3302,13 +3302,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3362,13 +3362,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3396,13 +3396,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3566,13 +3566,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3600,7 +3600,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3612,7 +3612,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3634,13 +3634,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3662,13 +3662,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3696,7 +3696,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3708,7 +3708,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3736,13 +3736,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3798,7 +3798,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3810,7 +3810,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3832,7 +3832,7 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Pseudonymisation"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3844,7 +3844,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Pseudonymisation"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3872,7 +3872,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3884,7 +3884,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3906,13 +3906,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3940,25 +3940,25 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
-            </ruleml:Op>
-            <ruleml:Var>x</ruleml:Var>
-          </ruleml:Atom>
-          <ruleml:Atom>
-            <ruleml:Op>
               <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
               <ruleml:Rel iri="gdpr:Processor"/>
+            </ruleml:Op>
+            <ruleml:Var>x</ruleml:Var>
+          </ruleml:Atom>
+          <ruleml:Atom>
+            <ruleml:Op>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -3980,13 +3980,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4034,13 +4034,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4068,13 +4068,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4102,13 +4102,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4136,13 +4136,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4170,13 +4170,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4198,13 +4198,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4232,13 +4232,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalDataBreach"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4424,13 +4424,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4458,13 +4458,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4554,7 +4554,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4566,7 +4566,7 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4588,13 +4588,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4622,13 +4622,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4656,13 +4656,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4690,13 +4690,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4724,13 +4724,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4882,13 +4882,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -4966,13 +4966,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -5042,13 +5042,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:Processor"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processor"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -5320,13 +5320,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -5468,13 +5468,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -5502,13 +5502,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -5598,13 +5598,13 @@
         <ruleml:And>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Consent"/>
+              <ruleml:Rel iri="gdpr:Processing"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Processing"/>
+              <ruleml:Rel iri="gdpr:Consent"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
@@ -5658,13 +5658,13 @@
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:PersonalData"/>
+              <ruleml:Rel iri="gdpr:Controller"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
           <ruleml:Atom>
             <ruleml:Op>
-              <ruleml:Rel iri="gdpr:Controller"/>
+              <ruleml:Rel iri="gdpr:PersonalData"/>
             </ruleml:Op>
             <ruleml:Var>x</ruleml:Var>
           </ruleml:Atom>
