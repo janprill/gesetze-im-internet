@@ -28,7 +28,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. If the TOC XML returns fewer than 100 items, the scraper exits with a non-zero code before downloading anything
   3. `uv.lock` is committed and `uv sync --frozen` installs all dependencies without network errors on a fresh machine
   4. The scraper produces no git commits or pushes — all git operations are absent from `scrape.py`
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — uv migration: pyproject.toml + uv.lock, retire requirements.txt (SCRAPER-01)
+- [ ] 01-02-PLAN.md — TDD: --date CLI arg + TOC validation guard in scrape.py (SCRAPER-02, SCRAPER-03, SCRAPER-04)
+- [ ] 01-03-PLAN.md — Human smoke test: live integration verification (SCRAPER-04)
 
 ### Phase 2: Workflow and Auth
 **Goal**: A GitHub Actions workflow runs on a daily cron schedule, authenticates via `GITHUB_TOKEN`, and pushes one commit with a dated tag to the `data` branch on every successful run; concurrent runs are serialized
@@ -68,7 +73,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scraper Modernization | 0/TBD | Not started | - |
+| 1. Scraper Modernization | 0/3 | Not started | - |
 | 2. Workflow and Auth | 0/TBD | Not started | - |
 | 3. Gap Detection and Idempotency | 0/TBD | Not started | - |
 | 4. Operational Hardening and Backfill | 0/TBD | Not started | - |
