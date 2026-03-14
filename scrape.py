@@ -1,6 +1,8 @@
 import argparse
+import datetime
 import os
 import shutil
+import sys
 from multiprocessing.pool import Pool
 from zipfile import ZipFile, BadZipFile
 import time
@@ -70,6 +72,16 @@ def scrape(TEMP_PATH, ITEMS_PATH, TOC_PATH, NOT_FOUND_PATH):
 
     links = [item.link.get_text() for item in list(soup.find_all("item"))]
 
+    MIN_EXPECTED_ITEMS = 100
+
+    if len(links) < MIN_EXPECTED_ITEMS:
+        print(
+            f"ERROR: TOC returned {len(links)} items (minimum {MIN_EXPECTED_ITEMS}). "
+            "Aborting scrape to avoid committing empty data.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     with Pool(2) as p:
         errors = p.starmap(
             handle_links,
@@ -86,11 +98,21 @@ def scrape(TEMP_PATH, ITEMS_PATH, TOC_PATH, NOT_FOUND_PATH):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("data_repo_path", type=str)
-    parser.add_argument("datetime", type=str)
+    parser.add_argument(
+        "--date",
+        type=str,
+        default=datetime.datetime.now(datetime.timezone.utc).date().isoformat(),
+        metavar="YYYY-MM-DD",
+        help="Date label for this scrape run. Written to log.md. Default: today (UTC).",
+    )
+    parser.add_argument(
+        "output_dir",
+        type=str,
+        help="Root of the checked-out data branch directory.",
+    )
     args = parser.parse_args()
 
-    BASE_PATH = os.path.join(args.data_repo_path, "data/")
+    BASE_PATH = os.path.join(args.output_dir, "data/")
     LOG_PATH = os.path.join(BASE_PATH, "log.md")
     TOC_PATH = os.path.join(BASE_PATH, "toc.xml")
     NOT_FOUND_PATH = os.path.join(BASE_PATH, "not_found.txt")
@@ -110,5 +132,5 @@ if __name__ == "__main__":
     scrape(TEMP_PATH, ITEMS_PATH, TOC_PATH, NOT_FOUND_PATH)
 
     with open(LOG_PATH, "a+") as file:
-        file.writelines(f"- {args.datetime}\n")
-    print("DONE", args.datetime)
+        file.writelines(f"- {args.date}\n")
+    print("DONE", args.date)
