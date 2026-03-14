@@ -73,7 +73,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scraper Modernization | 0/3 | Not started | - |
+| 1. Scraper Modernization | 1/3 | In Progress|  |
 | 2. Workflow and Auth | 0/TBD | Not started | - |
 | 3. Gap Detection and Idempotency | 0/TBD | Not started | - |
 | 4. Operational Hardening and Backfill | 0/TBD | Not started | - |

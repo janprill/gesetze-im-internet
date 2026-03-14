@@ -1,3 +1,19 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: planning
+stopped_at: Completed 01-scraper-modernization plan 01 (uv migration)
+last_updated: "2026-03-14T20:31:44.403Z"
+last_activity: 2026-03-14 — Roadmap created
+progress:
+  total_phases: 4
+  completed_phases: 0
+  total_plans: 3
+  completed_plans: 1
+  percent: 33
+---
+
 # Project State
 
 ## Project Reference
@@ -14,7 +30,7 @@ Plan: 0 of TBD in current phase
 Status: Ready to plan
 Last activity: 2026-03-14 — Roadmap created
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -34,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01-scraper-modernization P01 | 5 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -45,6 +62,8 @@ Recent decisions affecting current work:
 - Pending: Python 3.11+ modernisieren vs. Go/Rust-Neubau — research favors Python 3.13 + uv (least migration cost, reproducible lockfile)
 - Pending: Lücken-Nachhollogik — implemented via `detect_gaps.py` + tag-based idempotency (decided in research)
 - Pending: GitHub Actions statt Docker/Cron — confirmed direction, all phases build toward this
+- [Phase 01-scraper-modernization]: Used uv init --no-package to avoid src/ layout breaking uv run scrape.py
+- [Phase 01-scraper-modernization]: lxml>=5.0 required: no binary wheels for Python 3.13 in older versions, causing CI compilation failures
 
 ### Pending Todos
 
@@ -58,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14
-Stopped at: Roadmap created, STATE.md initialized
+Last session: 2026-03-14T20:31:44.400Z
+Stopped at: Completed 01-scraper-modernization plan 01 (uv migration)
 Resume file: None

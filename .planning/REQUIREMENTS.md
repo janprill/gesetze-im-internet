@@ -16,7 +16,7 @@ Requirements for the GitHub Actions migration. Each maps to roadmap phases.
 
 ### Scraper Modernization
 
-- [ ] **SCRAPER-01**: Scraper runs on Python 3.13 with pinned dependencies via `uv.lock`
+- [x] **SCRAPER-01**: Scraper runs on Python 3.13 with pinned dependencies via `uv.lock`
 - [ ] **SCRAPER-02**: Scraper accepts `--date YYYY-MM-DD` argument to scrape and commit for a specific date
 - [ ] **SCRAPER-03**: Scraper validates TOC structure (>100 items parsed) before starting downloads and fails fast if invalid
 - [ ] **SCRAPER-04**: Scraper preserves existing output format (ZIP files in `data/items/`, `not_found.txt`, `log.md`, dated git tags)
@@ -64,7 +64,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SCRAPER-01 | Phase 1 | Pending |
+| SCRAPER-01 | Phase 1 | Complete |
 | SCRAPER-02 | Phase 1 | Pending |
 | SCRAPER-03 | Phase 1 | Pending |
 | SCRAPER-04 | Phase 1 | Pending |
