@@ -12,7 +12,7 @@ This roadmap migrates the daily law-scraper from a broken Docker/cron setup to G
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Scraper Modernization** - Standalone, testable scraper on Python 3.13 with pinned deps and `--date` CLI argument
+- [x] **Phase 1: Scraper Modernization** - Standalone, testable scraper on Python 3.13 with pinned deps and `--date` CLI argument (completed 2026-03-14)
 - [ ] **Phase 2: Workflow and Auth** - Working GitHub Actions workflow that runs daily, authenticates with `GITHUB_TOKEN`, and pushes one dated commit to the `data` branch
 - [ ] **Phase 3: Gap Detection and Idempotency** - Workflow detects missing days and automatically scrapes them; repeated runs for the same date are safe
 - [ ] **Phase 4: Operational Hardening and Backfill** - 33-day data gap closed; push failures surface as workflow failures; system validated in production
@@ -73,7 +73,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scraper Modernization | 2/3 | In Progress|  |
+| 1. Scraper Modernization | 3/3 | Complete   | 2026-03-14 |
 | 2. Workflow and Auth | 0/TBD | Not started | - |
 | 3. Gap Detection and Idempotency | 0/TBD | Not started | - |
 | 4. Operational Hardening and Backfill | 0/TBD | Not started | - |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-scraper-modernization plan 02 (--date arg and TOC guard)
-last_updated: "2026-03-14T20:36:13.719Z"
+stopped_at: Completed 01-scraper-modernization plan 03 (live integration verification — Phase 1 sign-off)
+last_updated: "2026-03-14T21:50:44.603Z"
 last_activity: 2026-03-14 — Roadmap created
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
   percent: 33
 ---
 
@@ -52,6 +52,7 @@ Progress: [███░░░░░░░] 33%
 *Updated after each plan completion*
 | Phase 01-scraper-modernization P01 | 5 | 2 tasks | 5 files |
 | Phase 01-scraper-modernization P02 | 3 | 2 tasks | 4 files |
+| Phase 01-scraper-modernization P03 | 5min | 2 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 - [Phase 01-scraper-modernization]: lxml>=5.0 required: no binary wheels for Python 3.13 in older versions, causing CI compilation failures
 - [Phase 01-scraper-modernization]: Used datetime.timezone.utc for --date default to ensure UTC correctness regardless of server timezone
 - [Phase 01-scraper-modernization]: MIN_EXPECTED_ITEMS=100 constant inserted in scrape() before Pool to fail-fast on truncated TOC
+- [Phase 01-scraper-modernization]: Plan 03 is verification-only: no code changes, all artifacts produced in Plans 01 and 02
+- [Phase 01-scraper-modernization]: Human smoke test via /tmp/gii-smoke-test confirmed all four Phase 1 success criteria
 
 ### Pending Todos
 
@@ -80,6 +83,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T20:36:13.716Z
-Stopped at: Completed 01-scraper-modernization plan 02 (--date arg and TOC guard)
+Last session: 2026-03-14T21:50:44.601Z
+Stopped at: Completed 01-scraper-modernization plan 03 (live integration verification — Phase 1 sign-off)
 Resume file: None
