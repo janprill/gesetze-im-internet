@@ -9,10 +9,10 @@ Requirements for the GitHub Actions migration. Each maps to roadmap phases.
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: GitHub Actions workflow triggers daily scrape at 04:00 UTC via `schedule: cron`
-- [ ] **INFRA-02**: Workflow authenticates to GitHub via `GITHUB_TOKEN` with `contents: write` permission (no SSH keys)
-- [ ] **INFRA-03**: Workflow commits scraped ZIP files to `data` branch with dated tag on success
-- [ ] **INFRA-04**: Concurrent workflow runs are serialized via `concurrency` group (queued, not cancelled)
+- [x] **INFRA-01**: GitHub Actions workflow triggers daily scrape at 04:00 UTC via `schedule: cron`
+- [x] **INFRA-02**: Workflow authenticates to GitHub via `GITHUB_TOKEN` with `contents: write` permission (no SSH keys)
+- [x] **INFRA-03**: Workflow commits scraped ZIP files to `data` branch with dated tag on success
+- [x] **INFRA-04**: Concurrent workflow runs are serialized via `concurrency` group (queued, not cancelled)
 
 ### Scraper Modernization
 
@@ -26,7 +26,7 @@ Requirements for the GitHub Actions migration. Each maps to roadmap phases.
 - [ ] **RESIL-01**: Workflow detects missing days by comparing expected daily date sequence against existing date tags in `data` branch
 - [ ] **RESIL-02**: Workflow automatically re-scrapes all detected missing days in sequence (catch-up logic fills 33-day gap on first deployment)
 - [ ] **RESIL-03**: Runs are idempotent — re-running for an already-scraped date skips silently with exit 0, no duplicate commits
-- [ ] **RESIL-04**: GitHub automatically sends failure alert email when scheduled workflow job fails (built-in, no setup required)
+- [x] **RESIL-04**: GitHub automatically sends failure alert email when scheduled workflow job fails (built-in, no setup required)
 
 ## v2 Requirements
 
@@ -68,14 +68,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCRAPER-02 | Phase 1 | Complete |
 | SCRAPER-03 | Phase 1 | Complete |
 | SCRAPER-04 | Phase 1 | Complete |
-| INFRA-01 | Phase 2 | Pending |
-| INFRA-02 | Phase 2 | Pending |
-| INFRA-03 | Phase 2 | Pending |
-| INFRA-04 | Phase 2 | Pending |
+| INFRA-01 | Phase 2 | Complete |
+| INFRA-02 | Phase 2 | Complete |
+| INFRA-03 | Phase 2 | Complete |
+| INFRA-04 | Phase 2 | Complete |
 | RESIL-01 | Phase 3 | Pending |
 | RESIL-02 | Phase 3 | Pending |
 | RESIL-03 | Phase 3 | Pending |
-| RESIL-04 | Phase 2 | Pending |
+| RESIL-04 | Phase 2 | Complete |
 
 **Coverage:**
 - v1 requirements: 12 total

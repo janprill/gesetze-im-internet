@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-scraper-modernization plan 03 (live integration verification — Phase 1 sign-off)
-last_updated: "2026-03-14T21:58:09.381Z"
+stopped_at: Completed 02-workflow-and-auth plan 01 (GitHub Actions workflow and YAML tests)
+last_updated: "2026-03-15T07:01:58.079Z"
 last_activity: 2026-03-14 — Roadmap created
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 5
+  completed_plans: 4
   percent: 33
 ---
 
@@ -53,6 +53,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 01-scraper-modernization P01 | 5 | 2 tasks | 5 files |
 | Phase 01-scraper-modernization P02 | 3 | 2 tasks | 4 files |
 | Phase 01-scraper-modernization P03 | 5min | 2 tasks | 0 files |
+| Phase 02-workflow-and-auth P01 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 - [Phase 01-scraper-modernization]: MIN_EXPECTED_ITEMS=100 constant inserted in scrape() before Pool to fail-fast on truncated TOC
 - [Phase 01-scraper-modernization]: Plan 03 is verification-only: no code changes, all artifacts produced in Plans 01 and 02
 - [Phase 01-scraper-modernization]: Human smoke test via /tmp/gii-smoke-test confirmed all four Phase 1 success criteria
+- [Phase 02-workflow-and-auth]: Used string-based grep approach in YAML tests — PyYAML not in uv.lock; string checks sufficient for static assertions
+- [Phase 02-workflow-and-auth]: RESIL-04 satisfied by built-in GitHub failure email — no extra YAML needed; verified by absence of continue-on-error
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T21:50:44.601Z
-Stopped at: Completed 01-scraper-modernization plan 03 (live integration verification — Phase 1 sign-off)
+Last session: 2026-03-15T07:01:58.076Z
+Stopped at: Completed 02-workflow-and-auth plan 01 (GitHub Actions workflow and YAML tests)
 Resume file: None
