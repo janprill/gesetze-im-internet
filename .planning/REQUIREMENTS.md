@@ -108,4 +108,4 @@
 
 ---
 *Requirements defined: 2026-03-14*
-*Last updated: 2026-03-15 after v2.0 milestone start*
+*Last updated: 2026-03-15 after v2.0 roadmap created*
