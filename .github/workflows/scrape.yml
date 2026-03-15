@@ -1,0 +1,57 @@
+name: Daily Scrape
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrape-daily
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout workflow source
+        uses: actions/checkout@v4
+
+      - name: Checkout data branch
+        uses: actions/checkout@v4
+        with:
+          ref: data
+          path: data-branch
+          fetch-depth: 1
+
+      - name: Set up uv and Python 3.13
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Set scrape date (UTC)
+        id: set-date
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Run scraper
+        run: uv run scrape.py --date "${{ steps.set-date.outputs.date }}" ./data-branch
+
+      - name: Commit and push to data branch
+        env:
+          SCRAPE_DATE: ${{ steps.set-date.outputs.date }}
+        run: |
+          git -C data-branch config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C data-branch config user.name "github-actions[bot]"
+          git -C data-branch add .
+          git -C data-branch commit -m "scrape $SCRAPE_DATE"
+          git -C data-branch tag "$SCRAPE_DATE"
+          git -C data-branch push origin data
+          git -C data-branch push origin "$SCRAPE_DATE"
