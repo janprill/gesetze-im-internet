@@ -44,7 +44,11 @@ Plans:
   2. `git ls-remote --tags origin` shows the expected date tag after the workflow completes
   3. The workflow YAML declares `permissions: contents: write` and no SSH keys or PATs are used
   4. Two simultaneous workflow triggers result in sequential execution (second run queues, not cancels) with no duplicate commits
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Create scrape.yml workflow + YAML static tests (INFRA-01, INFRA-02, INFRA-03, INFRA-04, RESIL-04)
+- [ ] 02-02-PLAN.md — Live workflow_dispatch verification checkpoint (INFRA-03, RESIL-04)
 
 ### Phase 3: Gap Detection and Idempotency
 **Goal**: Every workflow run — whether cron or manual — checks for missing days and scrapes them sequentially; running the workflow twice for the same date is safe and produces no duplicate commits
@@ -74,6 +78,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Scraper Modernization | 3/3 | Complete   | 2026-03-14 |
-| 2. Workflow and Auth | 0/TBD | Not started | - |
+| 2. Workflow and Auth | 0/2 | Not started | - |
 | 3. Gap Detection and Idempotency | 0/TBD | Not started | - |
 | 4. Operational Hardening and Backfill | 0/TBD | Not started | - |
