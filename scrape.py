@@ -45,7 +45,7 @@ def handle_links(link, TEMP_PATH, ITEMS_PATH):
     assert link_parts[-1] == "xml.zip"
     item_id = link_parts[-2]
 
-    r = requests_retry_session().get(link)
+    r = requests_retry_session().get(link, timeout=30)
     zip_path = TEMP_PATH + item_id + ".zip"
     with open(zip_path, "wb") as f:
         f.write(r.content)
@@ -64,7 +64,7 @@ def handle_links(link, TEMP_PATH, ITEMS_PATH):
 
 
 def scrape(TEMP_PATH, ITEMS_PATH, TOC_PATH, NOT_FOUND_PATH):
-    toc = requests_retry_session().get("https://www.gesetze-im-internet.de/gii-toc.xml")
+    toc = requests_retry_session().get("https://www.gesetze-im-internet.de/gii-toc.xml", timeout=30)
     with open(TOC_PATH, "wb") as f:
         f.write(toc.content)
 
