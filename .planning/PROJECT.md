@@ -1,8 +1,16 @@
 # gesetze-im-internet Scraper
 
+## Current Milestone: v2.0 — Automation
+
+**Ziel:** Datenlücken schließen (Upstream-Sync + lokaler Backfill), Workflow auf self-hosted Runner migrieren, Gap Detection und Idempotenz implementieren.
+
+**Target requirements:** SYNC-01, SYNC-02, INFRA-05, INFRA-06, INFRA-07, RESIL-01, RESIL-02, RESIL-03, OPS-01, OPS-02
+
+---
+
 ## What This Is
 
-Ein automatischer Scraper, der täglich alle deutschen Gesetze von gesetze-im-internet.de herunterlädt und als ZIP-Dateien im `data`-Branch versioniert. Die Ausführung soll von einem selbst gehosteten Docker/Cron-Setup auf GitHub Actions migriert werden, damit kein einziger Scraping-Tag mehr ausgelassen wird.
+Ein automatischer Scraper, der täglich alle deutschen Gesetze von gesetze-im-internet.de herunterlädt und als ZIP-Dateien im `data`-Branch versioniert. Läuft auf GitHub Actions mit self-hosted Runner (Azure-IPs werden von der Zielseite geblockt). Erkennt und füllt automatisch Datenlücken.
 
 ## Core Value
 
@@ -56,9 +64,11 @@ GitHub Actions löst das Infrastrukturproblem komplett: kostenlos für Public Re
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| GitHub Actions statt Docker/Cron | Keine eigene Infrastruktur, kostenlos, automatisches Alerting, reliable | — Pending |
-| Python 3.11+ modernisieren vs. Go/Rust-Neubau | Python hat weniger Migrationsaufwand; Go/Rust einfacheres Deployment. Bevorzugt: geringster Wartungsaufwand | — Pending |
+| GitHub Actions statt Docker/Cron | Keine eigene Infrastruktur, kostenlos, automatisches Alerting, reliable | ✓ Good |
+| Python 3.13 + uv modernisieren | Geringster Migrationsaufwand, reproduzierbares Lockfile, Python-Ökosystem bekannt | ✓ Good |
+| Self-hosted Runner statt GitHub-hosted | GitHub-hosted (Azure) IPs von www.gesetze-im-internet.de geblockt | ✓ Good |
 | Lücken-Nachhollogik | Einmal verpasste Tage können nicht von außen nachgeholt werden — Scraper muss es selbst erkennen | — Pending |
+| Backfill: 1 Scrape → 33 Commits | Inhalt identisch für alle fehlenden Tage (Site hat keine Historien-API); effizienter als 33 separate Scrapes | — Pending |
 
 ---
-*Last updated: 2026-03-14 after initialization*
+*Last updated: 2026-03-15 after v2.0 milestone start*
