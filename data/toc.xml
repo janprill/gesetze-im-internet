@@ -3,6 +3,10 @@
 <items>
 
 <item>
+<title>Verordnung über den Vorbereitungsdienst für den gehobenen technischen Verwaltungsdienst in der Bundeswehr im Verwendungsbereich Brandschutz</title>
+<link>http://www.gesetze-im-internet.de/gfwtdbwvdv/xml.zip</link>
+</item>
+<item>
 <title>Gesetz über die Ausprägung einer 1-DM-Goldmünze und die Errichtung der Stiftung &quot;Geld und Währung&quot;</title>
 <link>http://www.gesetze-im-internet.de/1-dm-goldm_nzg/xml.zip</link>
 </item>
@@ -4460,7 +4464,7 @@
 </item>
 <item>
 <title>Verordnung über die Laufbahnen der Bundesbeamtinnen und Bundesbeamten</title>
-<link>http://www.gesetze-im-internet.de/blv_2009/xml.zip</link>
+<link>http://www.gesetze-im-internet.de/blv_2026/xml.zip</link>
 </item>
 <item>
 <title>Besondere Gebührenverordnung des Bundesministeriums für Arbeit und Soziales für individuell zurechenbare öffentliche Leistungen in dessen Zuständigkeitsbereich</title>
@@ -10603,10 +10607,6 @@
 <link>http://www.gesetze-im-internet.de/gfdv/xml.zip</link>
 </item>
 <item>
-<title>Verordnung über den Vorbereitungsdienst für den gehobenen feuerwehrtechnischen Dienst in der Bundeswehr</title>
-<link>http://www.gesetze-im-internet.de/gfwtdbwvdv/xml.zip</link>
-</item>
-<item>
 <title>Grundgesetz für die Bundesrepublik Deutschland</title>
 <link>http://www.gesetze-im-internet.de/gg/xml.zip</link>
 </item>
@@ -11359,11 +11359,11 @@
 <link>http://www.gesetze-im-internet.de/gtdbahnvdv/xml.zip</link>
 </item>
 <item>
-<title>Verordnung über die Ausbildung und Prüfung für den gehobenen technischen Dienst in der Bundeswehrverwaltung – Fachrichtung Wehrtechnik –</title>
+<title>Verordnung über den Vorbereitungsdienst für den gehobenen technischen Verwaltungsdienst in der Bundeswehrverwaltung im Verwendungsbereich Wehrtechnik</title>
 <link>http://www.gesetze-im-internet.de/gtdbwvaprv/xml.zip</link>
 </item>
 <item>
-<title>Verordnung über den Vorbereitungsdienst für den gehobenen technischen Dienst der Fernmelde- und Elektronischen Aufklärung des Bundes</title>
+<title>Verordnung über den Vorbereitungsdienst für den gehobenen technischen Verwaltungsdienst des Bundes im Verwendungsbereich Fernmelde- und Elektronische Aufklärung</title>
 <link>http://www.gesetze-im-internet.de/gtdfmeloaufklvdv/xml.zip</link>
 </item>
 <item>
@@ -11951,7 +11951,7 @@
 <link>http://www.gesetze-im-internet.de/hstruktg/xml.zip</link>
 </item>
 <item>
-<title>Verordnung über die Ausbildung und Prüfung für den höheren technischen Dienst in der Bundeswehrverwaltung – Fachrichtung Wehrtechnik –</title>
+<title>Verordnung über den Vorbereitungsdienst für den höheren technischen Verwaltungsdienst in der Bundeswehrverwaltung im Verwendungsbereich Wehrtechnik</title>
 <link>http://www.gesetze-im-internet.de/htdbwvaprv/xml.zip</link>
 </item>
 <item>
@@ -13861,6 +13861,10 @@
 <item>
 <title>Verordnung über die Laufbahnen im kriminalpolizeilichen Vollzugsdienst des Bundes</title>
 <link>http://www.gesetze-im-internet.de/krimlv_2009/xml.zip</link>
+</item>
+<item>
+<title>Dachgesetz zur Stärkung der physischen Resilienz kritischer Anlagen</title>
+<link>http://www.gesetze-im-internet.de/kritisdachg/xml.zip</link>
 </item>
 <item>
 <title>Abkommen zwischen der Regierung der Bundesrepublik Deutschland und der Regierung der Republik Honduras über die Regelung gewisser, durch den 2. Weltkrieg verursachter Probleme</title>
@@ -15947,11 +15951,11 @@
 <link>http://www.gesetze-im-internet.de/mtbg/xml.zip</link>
 </item>
 <item>
-<title>Verordnung über den Vorbereitungsdienst für den mittleren technischen Dienst in der Bundeswehrverwaltung – Fachrichtung Wehrtechnik –</title>
+<title>Verordnung über den Vorbereitungsdienst für den mittleren technischen Verwaltungsdienst in der Bundeswehrverwaltung im Verwendungsbereich Wehrtechnik</title>
 <link>http://www.gesetze-im-internet.de/mtdbwvvdv/xml.zip</link>
 </item>
 <item>
-<title>Verordnung über den Vorbereitungsdienst für den mittleren technischen Dienst der Fernmelde- und Elektronischen Aufklärung des Bundes</title>
+<title>Verordnung über den Vorbereitungsdienst für den mittleren technischen Verwaltungsdienst des Bundes im Verwendungsbereich Fernmelde- und Elektronische Aufklärung</title>
 <link>http://www.gesetze-im-internet.de/mtdfmeloaufklvdv/xml.zip</link>
 </item>
 <item>
@@ -23981,10 +23985,6 @@
 <item>
 <title>Verordnung zur Überleitung in die im Zweiten Gesetz zur Vereinheitlichung und Neuregelung des Besoldungsrechts in Bund und Ländern geregelten Ämter und über die künftig wegfallenden Ämter</title>
 <link>http://www.gesetze-im-internet.de/besvng2_lv/xml.zip</link>
-</item>
-<item>
-<title>Verordnung zum Schutz von Übertragungsnetzen*)</title>
-<link>http://www.gesetze-im-internet.de/_nschutzv/xml.zip</link>
 </item>
 <item>
 <title>Gesetz über die Ergänzung von Vorschriften des Umstellungsrechts und über die Ausstattung der Berliner Altbanken mit Ausgleichsforderungen</title>
