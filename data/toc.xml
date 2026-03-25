@@ -3,10 +3,6 @@
 <items>
 
 <item>
-<title>Verordnung über den Vorbereitungsdienst für den gehobenen technischen Verwaltungsdienst in der Bundeswehr im Verwendungsbereich Brandschutz</title>
-<link>http://www.gesetze-im-internet.de/gfwtdbwvdv/xml.zip</link>
-</item>
-<item>
 <title>Gesetz über die Ausprägung einer 1-DM-Goldmünze und die Errichtung der Stiftung &quot;Geld und Währung&quot;</title>
 <link>http://www.gesetze-im-internet.de/1-dm-goldm_nzg/xml.zip</link>
 </item>
@@ -569,6 +565,10 @@
 <item>
 <title>Sechste Verordnung zur Durchführung des Bundesentschädigungsgesetzes</title>
 <link>http://www.gesetze-im-internet.de/begdv_6/xml.zip</link>
+</item>
+<item>
+<title>Sechste Verordnung über die Freigabe von Vorräten des Erdölbevorratungsverbandes</title>
+<link>http://www.gesetze-im-internet.de/erd_lfrv_6/xml.zip</link>
 </item>
 <item>
 <title>Sechste Verordnung über zwingende Arbeitsbedingungen für die Pflegebranche</title>
@@ -11359,6 +11359,10 @@
 <link>http://www.gesetze-im-internet.de/gtdbahnvdv/xml.zip</link>
 </item>
 <item>
+<title>Verordnung über den Vorbereitungsdienst für den gehobenen technischen Verwaltungsdienst in der Bundeswehr im Verwendungsbereich Brandschutz</title>
+<link>http://www.gesetze-im-internet.de/gfwtdbwvdv/xml.zip</link>
+</item>
+<item>
 <title>Verordnung über den Vorbereitungsdienst für den gehobenen technischen Verwaltungsdienst in der Bundeswehrverwaltung im Verwendungsbereich Wehrtechnik</title>
 <link>http://www.gesetze-im-internet.de/gtdbwvaprv/xml.zip</link>
 </item>
@@ -18647,7 +18651,7 @@
 <link>http://www.gesetze-im-internet.de/pferdewmeistprv/xml.zip</link>
 </item>
 <item>
-<title>Verordnung über die Finanzierung der Ausbildungen nach dem Pflegeberufegesetz sowie zur Durchführung statistischer Erhebungen *)</title>
+<title>Verordnung über die Finanzierung der Ausbildungen nach dem Pflegeberufegesetz und nach dem Pflegefachassistenzgesetz sowie zur Durchführung statistischer Erhebungen</title>
 <link>http://www.gesetze-im-internet.de/pflafinv/xml.zip</link>
 </item>
 <item>
