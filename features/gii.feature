@@ -16,3 +16,9 @@ Feature: Gesetze im Internet als Go Library und CLI nutzen
     When ich `gii text BGB --date 2024-02-15` ausfuehre
     Then wird der data-Branch geklont oder aktualisiert
     And der Wortlaut wird auf stdout geschrieben
+
+  Scenario: CLI bootstrapped ein projekt-lokales Datenrepo
+    Given ein Projekt will den Datencheckout unter .gii-data halten
+    When ich `gii update --repo-dir .gii-data` ausfuehre
+    Then wird dort ein Git-Repo mit data-Branch geklont oder aktualisiert
+    And spaetere Aufrufe koennen `--repo-dir .gii-data --no-update` nutzen

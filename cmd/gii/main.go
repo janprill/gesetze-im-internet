@@ -28,6 +28,8 @@ func run(ctx context.Context, args []string) error {
 		return runText(ctx, args[1:])
 	case "update":
 		return runUpdate(ctx, args[1:])
+	case "init":
+		return runInit(ctx, args[1:])
 	case "help", "--help", "-h":
 		usage(os.Stdout)
 		return nil
@@ -86,26 +88,52 @@ func runUpdate(ctx context.Context, args []string) error {
 	return client.Update(ctx)
 }
 
+func runInit(ctx context.Context, args []string) error {
+	fs := flag.NewFlagSet("gii init", flag.ContinueOnError)
+	fs.SetOutput(os.Stderr)
+	common := addCommonFlags(fs)
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return fmt.Errorf("usage: gii init [--repo-dir ./.gii-data]")
+	}
+	if *common.repoDir == "" {
+		*common.repoDir = ".gii-data"
+	}
+	client := gii.New(common.options(nil))
+	return client.Update(ctx)
+}
+
 type commonFlags struct {
+	dataRepo *string
 	repoURL  *string
 	cacheDir *string
+	repoDir  *string
 	branch   *string
 	gitBin   *string
 }
 
 func addCommonFlags(fs *flag.FlagSet) commonFlags {
 	return commonFlags{
-		repoURL:  fs.String("repo-url", "", "Git repository URL with data branch (default: "+gii.DefaultRepositoryURL+")"),
-		cacheDir: fs.String("cache-dir", "", "Cache directory (default: OS user cache dir)"),
+		dataRepo: fs.String("data-repo", "", "Git repository URL with data branch (default: "+gii.DefaultRepositoryURL+")"),
+		repoURL:  fs.String("repo-url", "", "Deprecated alias for --data-repo"),
+		cacheDir: fs.String("cache-dir", "", "Cache directory; clone lives below <cache-dir>/repo (default: OS user cache dir)"),
+		repoDir:  fs.String("repo-dir", "", "Explicit local data repository directory, e.g. ./.gii-data"),
 		branch:   fs.String("branch", "", "Data branch name (default: "+gii.DefaultDataBranch+")"),
 		gitBin:   fs.String("git", "", "Git executable (default: git)"),
 	}
 }
 
 func (f commonFlags) options(clock func() time.Time) gii.Options {
+	repositoryURL := *f.dataRepo
+	if repositoryURL == "" {
+		repositoryURL = *f.repoURL
+	}
 	return gii.Options{
-		RepositoryURL: *f.repoURL,
+		RepositoryURL: repositoryURL,
 		CacheDir:      *f.cacheDir,
+		RepositoryDir: *f.repoDir,
 		DataBranch:    *f.branch,
 		GitBin:        *f.gitBin,
 		Clock:         clock,
@@ -121,7 +149,7 @@ func parseOptionalDate(value string) (time.Time, error) {
 
 func flagsFirst(args []string) []string {
 	stringFlags := map[string]bool{
-		"date": true, "today": true, "repo-url": true, "cache-dir": true, "branch": true, "git": true,
+		"date": true, "today": true, "data-repo": true, "repo-url": true, "cache-dir": true, "repo-dir": true, "branch": true, "git": true,
 	}
 	var flags, positional []string
 	for i := 0; i < len(args); {
@@ -161,11 +189,13 @@ func usage(out *os.File) {
 	fmt.Fprintln(out, `gii - Gesetze-im-Internet data-branch CLI
 
 Usage:
-  gii update [--repo-url URL] [--cache-dir DIR] [--branch data]
-  gii text <gesetz> [--date YYYY-MM-DD] [--repo-url URL] [--cache-dir DIR] [--branch data] [--no-update]
+  gii init [--repo-dir ./.gii-data] [--data-repo URL] [--branch data]
+  gii update [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data]
+  gii text <gesetz> [--date YYYY-MM-DD] [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data] [--no-update]
 
 Examples:
+  gii init --repo-dir ./.gii-data
   gii text BGB --date 2024-02-15
   gii text "Bürgerliches Gesetzbuch"
-  gii update --repo-url git@github.com:janprill/gii.git`)
+  gii update --data-repo https://github.com/QuantLaw/gesetze-im-internet.git`)
 }

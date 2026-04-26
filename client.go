@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	// DefaultRepositoryURL is the repository that is expected to contain the data branch.
-	// Private installations can authenticate through the normal git credential/SSH setup or override this option.
-	DefaultRepositoryURL = "https://github.com/janprill/gii.git"
+	// DefaultRepositoryURL is the public archive repository that contains the data branch.
+	// The Go module itself can live in a private repository; callers only need to override
+	// this when they want to use their own data mirror.
+	DefaultRepositoryURL = "https://github.com/QuantLaw/gesetze-im-internet.git"
 	DefaultDataBranch    = "data"
 )
 
@@ -23,8 +24,14 @@ type Options struct {
 	// Defaults to DefaultRepositoryURL.
 	RepositoryURL string
 
-	// CacheDir stores the local git clone. Defaults to the user cache directory.
+	// CacheDir stores the managed local git clone below <CacheDir>/repo.
+	// Defaults to the user cache directory. Ignored when RepositoryDir is set.
 	CacheDir string
+
+	// RepositoryDir is an explicit path to the local git clone. When set, gii clones/fetches
+	// directly into this directory instead of using <CacheDir>/repo. This is useful for
+	// project-local bootstraps such as ./.gii-data that other tools can also inspect.
+	RepositoryDir string
 
 	// DataBranch is the git branch containing data/items and data/toc.xml. Defaults to "data".
 	DataBranch string
@@ -45,11 +52,15 @@ type Client struct {
 // New creates a Client. It does not touch the network until Update or a lookup is called.
 func New(options Options) *Client {
 	options = normalizeOptions(options)
+	repositoryDir := options.RepositoryDir
+	if repositoryDir == "" {
+		repositoryDir = filepath.Join(options.CacheDir, "repo")
+	}
 	return &Client{
 		options: options,
 		store: gitrepo.New(gitrepo.Options{
 			RepositoryURL: options.RepositoryURL,
-			CacheDir:      filepath.Join(options.CacheDir, "repo"),
+			CacheDir:      repositoryDir,
 			DataBranch:    options.DataBranch,
 			GitBin:        options.GitBin,
 		}),

@@ -103,13 +103,46 @@ func TestBDD_CLIAktualisiertCacheUndGibtWortlautAus(t *testing.T) {
 func TestBDD_CLIKurzformOhneDatumNutztHeute(t *testing.T) {
 	source := newDataBranchFixture(t, version{date: "2024-01-01", paragraph: "Heute per CLI."})
 	exe := buildCLI(t)
-	cmd := exec.Command(exe, "text", "bgb", "--repo-url", source, "--cache-dir", t.TempDir(), "--today", "2024-01-15")
+	cmd := exec.Command(exe, "text", "bgb", "--data-repo", source, "--cache-dir", t.TempDir(), "--today", "2024-01-15")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("gii CLI failed: %v\n%s", err, out)
 	}
 	if !strings.Contains(string(out), "Heute per CLI.") {
 		t.Fatalf("expected today's text, got:\n%s", out)
+	}
+}
+
+func TestBDD_CLIKlonteExplizitesDatenrepoFuerProjekt(t *testing.T) {
+	// Given ein Projekt moechte ein sichtbares lokales Datenrepo statt eines versteckten OS-Caches.
+	source := newDataBranchFixture(t, version{date: "2024-01-01", paragraph: "Projekt-Repo-Fassung."})
+	repoDir := filepath.Join(t.TempDir(), ".gii-data")
+	exe := buildCLI(t)
+
+	// When das CLI mit --repo-dir aktualisiert wird.
+	cmd := exec.Command(exe, "update", "--data-repo", source, "--repo-dir", repoDir)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("gii update failed: %v\n%s", err, out)
+	}
+
+	// Then liegt dort ein direkt nutzbares Git-Repo mit data-Branch.
+	if _, err := os.Stat(filepath.Join(repoDir, ".git")); err != nil {
+		t.Fatalf("expected cloned data repo at --repo-dir: %v", err)
+	}
+	cmd = exec.Command(exe, "text", "BGB", "--repo-dir", repoDir, "--no-update", "--date", "2024-01-15")
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("gii text --repo-dir --no-update failed: %v\n%s", err, out)
+	}
+	if !strings.Contains(string(out), "Projekt-Repo-Fassung.") {
+		t.Fatalf("expected text from project repo, got:\n%s", out)
+	}
+}
+
+func TestDefaultDataRepositoryIsPublicArchiveNotCodeModule(t *testing.T) {
+	if gii.DefaultRepositoryURL != "https://github.com/QuantLaw/gesetze-im-internet.git" {
+		t.Fatalf("unexpected default data repository: %s", gii.DefaultRepositoryURL)
 	}
 }
 

@@ -19,7 +19,13 @@ Daher wird auf eine Weiterverarbeitung der archivierten Daten an dieser Stelle v
 
 ## Go-Library und CLI
 
-Dieses Repository kann zusätzlich als private Go-Library und als CLI genutzt werden. Das Package `github.com/janprill/gii` liest Gesetzesfassungen aus dem Git-`data`-Branch, aktualisiert einen lokalen Cache per `git fetch` und wählt automatisch den neuesten Daten-Commit am oder vor dem gewünschten Stichtag. Wird kein Datum angegeben, wird das heutige Datum verwendet.
+Dieses Repository kann zusätzlich als private Go-Library und als CLI genutzt werden. Wichtig ist die Trennung von **Code-Modul** und **Datenquelle**:
+
+- Das Go-Modul liegt unter `github.com/janprill/gii` und enthält Library + CLI.
+- Die Gesetzesdaten werden standardmäßig direkt aus dem öffentlichen Archiv `https://github.com/QuantLaw/gesetze-im-internet.git`, Branch `data`, gelesen.
+- Ein eigener Daten-Mirror ist optional. Er ist nur nötig, wenn ihr den Datenstand intern pinnen, cachen oder unabhängig vom Upstream bereitstellen wollt.
+
+Damit muss der `data`-Branch nicht zwingend in das private Go-Modul-Repository gespiegelt werden. Andere Projekte können die Library einbinden und ohne weitere Konfiguration loslegen. Intern klont/fetcht `gii` ein lokales Git-Repo und wählt automatisch den neuesten Daten-Commit am oder vor dem gewünschten Stichtag. Wird kein Datum angegeben, wird das heutige Datum verwendet.
 
 ### Installation
 
@@ -29,7 +35,7 @@ Für ein privates GitHub-Modul sollte Go so konfiguriert sein, dass der Modulpfa
 go env -w GOPRIVATE=github.com/janprill/*
 ```
 
-Danach kann das Modul in anderen Projekten eingebunden werden:
+Danach kann das Modul in anderen Go-Projekten eingebunden werden:
 
 ```sh
 go get github.com/janprill/gii
@@ -41,7 +47,58 @@ Das CLI wird so installiert:
 go install github.com/janprill/gii/cmd/gii@latest
 ```
 
-Bei privaten Repositories verwendet `gii` die normale Git-Authentifizierung des Systems, also z. B. SSH-Key, Git Credential Helper oder Token-Konfiguration.
+Bei privaten Code- oder Daten-Repositories verwendet `gii` die normale Git-Authentifizierung des Systems, also z. B. SSH-Key, Git Credential Helper oder Token-Konfiguration.
+
+### Empfohlenes Setup
+
+#### Einfachster Fall: Go-Projekt
+
+Keine Daten-Konfiguration nötig. Beim ersten Zugriff klont die Library das öffentliche Datenarchiv in den OS-User-Cache:
+
+```go
+client := gii.New(gii.Options{})
+law, err := client.LawText(ctx, "BGB", date)
+```
+
+#### Projekt-lokales Datenrepo für Go- oder Nicht-Go-Projekte
+
+Wenn der Daten-Checkout sichtbar im Projekt liegen soll, kann das CLI ihn explizit anlegen/aktualisieren:
+
+```sh
+gii init --repo-dir ./.gii-data
+# oder äquivalent:
+gii update --repo-dir ./.gii-data
+```
+
+Danach kann der Checkout offline genutzt werden:
+
+```sh
+gii text BGB --date 2024-02-15 --repo-dir ./.gii-data --no-update
+```
+
+In Go kann derselbe Checkout genutzt werden:
+
+```go
+client := gii.New(gii.Options{RepositoryDir: ".gii-data"})
+law, err := client.LawTextWithoutUpdate(ctx, "BGB", date)
+```
+
+#### Eigener Daten-Mirror
+
+Für interne Mirrors oder einen privaten Fork des Datenbranches:
+
+```sh
+gii init --repo-dir ./.gii-data --data-repo git@github.com:deine-org/gesetze-data.git
+```
+
+```go
+client := gii.New(gii.Options{
+    RepositoryURL: "git@github.com:deine-org/gesetze-data.git",
+    RepositoryDir: ".gii-data",
+})
+```
+
+`--repo-url` bleibt als kompatibler Alias für `--data-repo` erhalten, neue Aufrufe sollten aber `--data-repo` verwenden.
 
 ### Quickstart: Library
 
@@ -84,18 +141,19 @@ func main() {
 
 ```go
 client := gii.New(gii.Options{
-    RepositoryURL: "git@github.com:janprill/gii.git", // optional; Default: https://github.com/janprill/gii.git
-    CacheDir:      "/tmp/gii-cache",                  // optional; Default: OS-User-Cache-Verzeichnis
-    DataBranch:    "data",                            // optional; Default: data
+    RepositoryURL: "https://github.com/QuantLaw/gesetze-im-internet.git", // optional; Default-Datenquelle
+    CacheDir:      "/tmp/gii-cache",                                      // optional; Clone liegt unter <CacheDir>/repo
+    RepositoryDir: ".gii-data",                                           // optional; direkter Clone-Pfad statt CacheDir
+    DataBranch:    "data",                                                // optional; Default: data
 })
 ```
 
 Wichtige Methoden:
 
-- `client.Update(ctx)` klont oder aktualisiert den lokalen Cache.
-- `client.LawText(ctx, query, date)` aktualisiert den Cache und gibt den Wortlaut zum Stichtag zurück.
+- `client.Update(ctx)` klont oder aktualisiert den lokalen Daten-Checkout.
+- `client.LawText(ctx, query, date)` aktualisiert den Checkout und gibt den Wortlaut zum Stichtag zurück.
 - `client.LawTextToday(ctx, query)` nutzt das heutige Datum.
-- `client.LawTextWithoutUpdate(ctx, query, date)` arbeitet offline mit einem bereits vorhandenen Cache.
+- `client.LawTextWithoutUpdate(ctx, query, date)` arbeitet offline mit einem bereits vorhandenen Checkout.
 
 `query` kann sein:
 
@@ -119,11 +177,11 @@ Typed Errors:
 
 ### Offline-/Batch-Nutzung
 
-Wenn mehrere Gesetze aus demselben Datenstand gelesen werden sollen, sollte der Cache einmal aktualisiert und danach offline verwendet werden:
+Wenn mehrere Gesetze aus demselben Datenstand gelesen werden sollen, sollte der Checkout einmal aktualisiert und danach offline verwendet werden:
 
 ```go
 ctx := context.Background()
-client := gii.New(gii.Options{})
+client := gii.New(gii.Options{RepositoryDir: ".gii-data"})
 
 if err := client.Update(ctx); err != nil {
     log.Fatal(err)
@@ -141,7 +199,10 @@ for _, abbreviation := range []string{"BGB", "HGB", "StGB"} {
 ### CLI
 
 ```sh
-# Cache aktualisieren
+# Projekt-lokales Datenrepo initialisieren oder aktualisieren
+gii init --repo-dir ./.gii-data
+
+# OS-User-Cache aktualisieren
 gii update
 
 # BGB im Wortlaut zum Stichtag ausgeben
@@ -150,16 +211,18 @@ gii text BGB --date 2024-02-15
 # Ohne --date wird heute verwendet
 gii text "Bürgerliches Gesetzbuch"
 
-# Lokalen Cache ohne Fetch verwenden
-gii text BGB --date 2024-02-15 --no-update
+# Lokales Projekt-Datenrepo ohne Fetch verwenden
+gii text BGB --date 2024-02-15 --repo-dir ./.gii-data --no-update
 ```
 
 Wichtige Flags:
 
-- `--repo-url`: Git-Repository mit `data`-Branch; Standard ist `https://github.com/janprill/gii.git`.
-- `--cache-dir`: lokaler Cache; Standard ist das OS-User-Cache-Verzeichnis.
+- `--data-repo`: Git-Repository mit `data`-Branch; Standard ist `https://github.com/QuantLaw/gesetze-im-internet.git`.
+- `--repo-url`: kompatibler Alias für `--data-repo`.
+- `--cache-dir`: lokaler Cache; Clone liegt unter `<cache-dir>/repo`; Standard ist das OS-User-Cache-Verzeichnis.
+- `--repo-dir`: expliziter Pfad zu einem lokalen Datenrepo, z. B. `./.gii-data`.
 - `--branch`: Datenbranch; Standard ist `data`.
-- `--no-update`: vorhandenen Cache offline verwenden.
+- `--no-update`: vorhandenen Checkout offline verwenden.
 
 ### Verhalten und Grenzen
 
