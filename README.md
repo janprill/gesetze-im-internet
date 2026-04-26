@@ -17,6 +17,156 @@ Dieser historische Datensatz eignet sich insbesondere für die maschinelle Weite
 und kann beispielsweise für quantitative Analysen des Rechts genutzt werden. 
 Daher wird auf eine Weiterverarbeitung der archivierten Daten an dieser Stelle verzichtet.
 
+## Go-Library und CLI
+
+Dieses Repository kann zusätzlich als private Go-Library und als CLI genutzt werden. Das Package `github.com/janprill/gii` liest Gesetzesfassungen aus dem Git-`data`-Branch, aktualisiert einen lokalen Cache per `git fetch` und wählt automatisch den neuesten Daten-Commit am oder vor dem gewünschten Stichtag. Wird kein Datum angegeben, wird das heutige Datum verwendet.
+
+### Installation
+
+Für ein privates GitHub-Modul sollte Go so konfiguriert sein, dass der Modulpfad nicht über den öffentlichen Proxy aufgelöst wird:
+
+```sh
+go env -w GOPRIVATE=github.com/janprill/*
+```
+
+Danach kann das Modul in anderen Projekten eingebunden werden:
+
+```sh
+go get github.com/janprill/gii
+```
+
+Das CLI wird so installiert:
+
+```sh
+go install github.com/janprill/gii/cmd/gii@latest
+```
+
+Bei privaten Repositories verwendet `gii` die normale Git-Authentifizierung des Systems, also z. B. SSH-Key, Git Credential Helper oder Token-Konfiguration.
+
+### Quickstart: Library
+
+```go
+package main
+
+import (
+    "context"
+    "errors"
+    "fmt"
+    "log"
+    "time"
+
+    "github.com/janprill/gii"
+)
+
+func main() {
+    ctx := context.Background()
+    client := gii.New(gii.Options{})
+
+    date, err := time.Parse("2006-01-02", "2024-02-15")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    law, err := client.LawText(ctx, "BGB", date)
+    if errors.Is(err, gii.ErrLawNotFound) {
+        log.Fatal("Gesetz nicht gefunden")
+    }
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("%s (%s)\n", law.Title, law.Revision)
+    fmt.Println(law.Text)
+}
+```
+
+### Public API
+
+```go
+client := gii.New(gii.Options{
+    RepositoryURL: "git@github.com:janprill/gii.git", // optional; Default: https://github.com/janprill/gii.git
+    CacheDir:      "/tmp/gii-cache",                  // optional; Default: OS-User-Cache-Verzeichnis
+    DataBranch:    "data",                            // optional; Default: data
+})
+```
+
+Wichtige Methoden:
+
+- `client.Update(ctx)` klont oder aktualisiert den lokalen Cache.
+- `client.LawText(ctx, query, date)` aktualisiert den Cache und gibt den Wortlaut zum Stichtag zurück.
+- `client.LawTextToday(ctx, query)` nutzt das heutige Datum.
+- `client.LawTextWithoutUpdate(ctx, query, date)` arbeitet offline mit einem bereits vorhandenen Cache.
+
+`query` kann sein:
+
+- die Gesetze-im-Internet-ID, z. B. `bgb`,
+- die amtliche Abkürzung aus dem XML, z. B. `BGB`,
+- oder der Titel aus `data/toc.xml`, z. B. `Bürgerliches Gesetzbuch`.
+
+Der Rückgabewert `*gii.Law` enthält u. a.:
+
+- `ID`: Gesetze-im-Internet-Verzeichnis-ID,
+- `Title`: Titel aus `data/toc.xml`,
+- `Date`: angefragter Stichtag,
+- `Revision`: ausgewählter Git-Commit,
+- `XMLFiles`: gerenderte XML-Dateien,
+- `Text`: menschenlesbarer Wortlaut als Plaintext.
+
+Typed Errors:
+
+- `gii.ErrLawNotFound`, wenn kein passendes Gesetz gefunden wurde.
+- `gii.ErrRevisionNotFound`, wenn der Datenbranch für den Stichtag noch keinen Commit enthält.
+
+### Offline-/Batch-Nutzung
+
+Wenn mehrere Gesetze aus demselben Datenstand gelesen werden sollen, sollte der Cache einmal aktualisiert und danach offline verwendet werden:
+
+```go
+ctx := context.Background()
+client := gii.New(gii.Options{})
+
+if err := client.Update(ctx); err != nil {
+    log.Fatal(err)
+}
+
+for _, abbreviation := range []string{"BGB", "HGB", "StGB"} {
+    law, err := client.LawTextWithoutUpdate(ctx, abbreviation, time.Now())
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(law.Title, len(law.Text))
+}
+```
+
+### CLI
+
+```sh
+# Cache aktualisieren
+gii update
+
+# BGB im Wortlaut zum Stichtag ausgeben
+gii text BGB --date 2024-02-15
+
+# Ohne --date wird heute verwendet
+gii text "Bürgerliches Gesetzbuch"
+
+# Lokalen Cache ohne Fetch verwenden
+gii text BGB --date 2024-02-15 --no-update
+```
+
+Wichtige Flags:
+
+- `--repo-url`: Git-Repository mit `data`-Branch; Standard ist `https://github.com/janprill/gii.git`.
+- `--cache-dir`: lokaler Cache; Standard ist das OS-User-Cache-Verzeichnis.
+- `--branch`: Datenbranch; Standard ist `data`.
+- `--no-update`: vorhandenen Cache offline verwenden.
+
+### Verhalten und Grenzen
+
+- Der Stichtag bezieht sich auf Archivierungs-Commits im `data`-Branch, nicht zwingend auf das juristische Inkrafttreten einzelner Normänderungen.
+- Der Wortlaut wird aus den XML-Dateien als Plaintext gerendert; Layout, PDFs, EPUBs und HTML werden nicht nachgebildet.
+- Für reproduzierbare Ergebnisse kann die ausgewählte Git-Revision aus `law.Revision` protokolliert werden.
+
 
 ## Hintergrundinformationen
 
