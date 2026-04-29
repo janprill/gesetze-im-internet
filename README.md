@@ -21,7 +21,7 @@ Daher wird auf eine Weiterverarbeitung der archivierten Daten an dieser Stelle v
 
 Im Branch [`rlm`](https://github.com/janprill/gii/tree/rlm) wird ein ProofOfTechnology vorbereitet, der die Sozialgesetzbücher aus dem `data`-Branch als lokale RLM-Variablenschicht verfügbar machen soll. Das Vorhaben ist bewusst schlank gehalten: deterministisch extrahierte Rohtext-Spans aus den SGB-XML-Dateien und dem SGG, JSONL-Artefakte, SQLite-FTS, Python-Lazy-Objekte sowie von `GPT-5.3-Codex-Spark` erzeugte, evidenzgebundene Normkarten und Topic-Maps.
 
-Das Umsetzungskonzept liegt unter [`docs/sgb-rlm-varstore-implementation-plan.md`](docs/sgb-rlm-varstore-implementation-plan.md). Zentrale Leitregel: Memory-Cards dürfen nur navigieren; jede inhaltliche Aussage muss auf Raw-Span-IDs zurückführbar bleiben.
+Das Umsetzungskonzept liegt unter [`docs/sgb-rlm-varstore-implementation-plan.md`](docs/sgb-rlm-varstore-implementation-plan.md). Das dazu passende, kleinschrittige Umsetzungsprompt für `GPT-5.3-Codex-Spark` liegt unter [`docs/codex-spark-implementation-prompt.md`](docs/codex-spark-implementation-prompt.md). Zentrale Leitregel: Memory-Cards dürfen nur navigieren; jede inhaltliche Aussage muss auf Raw-Span-IDs zurückführbar bleiben.
 
 ## Go-Library und CLI
 
