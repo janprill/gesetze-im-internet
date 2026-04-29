@@ -1,0 +1,21 @@
+<norm builddate="fixture" doknr="fixture-24">
+  <metadaten>
+    <jurabk>SGB X</jurabk>
+    <enbez>§ 24</enbez>
+    <titel format="XML">Anhörung Beteiligter</titel>
+  </metadaten>
+  <textdaten><text format="XML"><Content>
+    <P>(1) Vor Erlass eines Verwaltungsaktes, der in Rechte eines Beteiligten eingreift, ist diesem Gelegenheit zu geben, sich zu den für die Entscheidung erheblichen Tatsachen zu äußern.</P>
+    <P>(2) Von der Anhörung kann unter den gesetzlich bestimmten Voraussetzungen abgesehen werden.</P>
+  </Content></text></textdaten>
+</norm>
+<norm builddate="fixture" doknr="fixture-31">
+  <metadaten>
+    <jurabk>SGB X</jurabk>
+    <enbez>§ 31</enbez>
+    <titel format="XML">Begriff des Verwaltungsaktes</titel>
+  </metadaten>
+  <textdaten><text format="XML"><Content>
+    <P>Verwaltungsakt ist jede Verfügung, Entscheidung oder andere hoheitliche Maßnahme, die eine Behörde zur Regelung eines Einzelfalles auf dem Gebiet des öffentlichen Rechts trifft und die auf unmittelbare Rechtswirkung nach außen gerichtet ist.</P>
+  </Content></text></textdaten>
+</norm>

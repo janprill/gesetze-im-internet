@@ -1,9 +1,13 @@
 # Umsetzungskonzept: `sgb-rlm-varstore`
 
-Status: Konzept für Branch `rlm`  
+Status: Konzept für Branch `rlm` (mit Anmerkungen aus der Umsetzung)
 Zielmodell für Umsetzung durch: `GPT-5.3-Codex-Spark`  
 Datenbasis: Branch `data` dieses Repositories, gepinnt auf einen konkreten Commit  
 Scope: Sozialgesetzbücher SGB I bis SGB XIV, soweit vorhanden, plus SGG als Verfahrens-/Prozessrechts-Kontext
+
+> **Anmerkung (Umsetzung):** Der Proof wurde vollständig umgesetzt. Abweichungen
+> sind in den Abschnitten markiert und in `sgb-rlm-varstore/WORKLOG.md`
+> dokumentiert.
 
 ## 1. Executive Summary
 
@@ -207,7 +211,7 @@ Pflichtfelder:
   "span_id": "SGB_X:§24:Abs1:S1",
   "book_id": "SGB_X",
   "norm_id": "SGB_X:§24",
-  "paragraph": "§ 24",
+  "paragraph": "§24",   # normalisiert (kein Leerzeichen), abw. vom Konzept "§ 24"
   "heading": "Anhörung Beteiligter",
   "unit_type": "sentence",
   "path": ["Abs. 1", "Satz 1"],
@@ -235,7 +239,7 @@ heading
 {
   "norm_id": "SGB_X:§24",
   "book_id": "SGB_X",
-  "paragraph": "§ 24",
+  "paragraph": "§24",   # normalisiert (kein Leerzeichen), abw. vom Konzept "§ 24"
   "heading": "Anhörung Beteiligter",
   "span_ids": ["SGB_X:§24:Abs1:S1", "SGB_X:§24:Abs2:S1"],
   "norm_text_hash": "sha256:<hex>",
@@ -324,7 +328,7 @@ class SGBMemory:
     def norm(self, norm_id: str) -> "NormVar": ...
     def search(self, query: str, k: int = 20) -> list[dict]: ...
     def topic(self, label: str) -> "TopicVar": ...
-    def pack(self, ids: list[str], include_cards: bool = True) -> str: ...
+    # def pack(...) – NICHT implementiert; stattdessen self.packer.norms(...)
 
 class NormVar:
     def text(self) -> str: ...
@@ -431,7 +435,7 @@ Minimaler Ablauf:
 ```bash
 python -m sgbpot.cli ingest \
   --repo . \
-  --data-branch data \
+  --data-ref data \          # abweichend: Flag heißt --data-ref, nicht --data-branch
   --out sgb-rlm-varstore/varstore
 
 python -m sgbpot.cli index \

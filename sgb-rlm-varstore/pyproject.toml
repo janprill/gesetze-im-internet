@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sgb-rlm-varstore"
+version = "0.0.1"
+requires-python = ">=3.11"
+description = "Proof-of-technology local varstore for SGB/SGG law text"
+dependencies = []
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

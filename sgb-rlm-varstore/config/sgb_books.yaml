@@ -1,0 +1,45 @@
+books:
+  - book_id: SGB_I
+    aliases: ["SGB 1", "SGB I"]
+    data_paths: ["data/items/sgb_1"]
+  - book_id: SGB_II
+    aliases: ["SGB 2", "SGB II"]
+    data_paths: ["data/items/sgb_2"]
+  - book_id: SGB_III
+    aliases: ["SGB 3", "SGB III"]
+    data_paths: ["data/items/sgb_3"]
+  - book_id: SGB_IV
+    aliases: ["SGB 4", "SGB IV"]
+    data_paths: ["data/items/sgb_4"]
+  - book_id: SGB_V
+    aliases: ["SGB 5", "SGB V"]
+    data_paths: ["data/items/sgb_5"]
+  - book_id: SGB_VI
+    aliases: ["SGB 6", "SGB VI"]
+    data_paths: ["data/items/sgb_6"]
+  - book_id: SGB_VII
+    aliases: ["SGB 7", "SGB VII"]
+    data_paths: ["data/items/sgb_7"]
+  - book_id: SGB_VIII
+    aliases: ["SGB 8", "SGB VIII"]
+    data_paths: ["data/items/sgb_8"]
+  - book_id: SGB_IX
+    aliases: ["SGB 9", "SGB IX"]
+    data_paths: ["data/items/sgb_9_2018"]
+  - book_id: SGB_X
+    aliases: ["SGB 10", "SGB X"]
+    data_paths: ["data/items/sgb_10"]
+  - book_id: SGB_XI
+    aliases: ["SGB 11", "SGB XI"]
+    data_paths: ["data/items/sgb_11"]
+  - book_id: SGB_XII
+    aliases: ["SGB 12", "SGB XII"]
+    data_paths: ["data/items/sgb_12"]
+  - book_id: SGB_XIV
+    aliases: ["SGB 14", "SGB XIV"]
+    data_paths: ["data/items/sgb_14"]
+  - book_id: SGG
+    aliases: ["SGG", "Sozialgerichtsgesetz"]
+    data_paths: ["data/items/sgg"]
+
+# Hinweis: SGB XIII ist bewusst nicht enthalten.
