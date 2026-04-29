@@ -1,1 +1,8 @@
 .ralph/
+
+# Local/generated SGB RLM varstore artifacts
+sgb-rlm-varstore/.venv/
+sgb-rlm-varstore/.pytest_cache/
+sgb-rlm-varstore/**/__pycache__/
+sgb-rlm-varstore/varstore/
+sgb-rlm-varstore/**/*.sqlite
