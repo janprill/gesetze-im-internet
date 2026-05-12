@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -24,6 +25,8 @@ func run(ctx context.Context, args []string) error {
 		return flag.ErrHelp
 	}
 	switch args[0] {
+	case "resolve":
+		return runResolve(ctx, args[1:])
 	case "text":
 		return runText(ctx, args[1:])
 	case "update":
@@ -37,6 +40,45 @@ func run(ctx context.Context, args []string) error {
 		usage(os.Stderr)
 		return fmt.Errorf("unknown command %q", args[0])
 	}
+}
+
+func runResolve(ctx context.Context, args []string) error {
+	fs := flag.NewFlagSet("gii resolve", flag.ContinueOnError)
+	fs.SetOutput(os.Stderr)
+	common := addCommonFlags(fs)
+	dateValue := fs.String("date", "", "Stichtag im Format YYYY-MM-DD; default: heute")
+	todayValue := fs.String("today", "", "Test-/Automationshilfe: heutiges Datum im Format YYYY-MM-DD")
+	noUpdate := fs.Bool("no-update", false, "lokalen Cache verwenden, ohne vorher zu fetchen")
+	jsonOutput := fs.Bool("json", false, "strukturiertes JSON ausgeben")
+	if err := fs.Parse(flagsFirst(args)); err != nil {
+		return err
+	}
+	if fs.NArg() != 1 {
+		return fmt.Errorf("usage: gii resolve <normref> [--date YYYY-MM-DD] [--json]")
+	}
+	clock, err := clockFromToday(*todayValue)
+	if err != nil {
+		return err
+	}
+	client := gii.New(common.options(clock))
+	date, err := parseOptionalDate(*dateValue)
+	if err != nil {
+		return err
+	}
+	var resolved *gii.ResolvedNorm
+	if *noUpdate {
+		resolved, err = client.ResolveNormWithoutUpdate(ctx, fs.Arg(0), date)
+	} else {
+		resolved, err = client.ResolveNorm(ctx, fs.Arg(0), date)
+	}
+	if err != nil {
+		return err
+	}
+	if *jsonOutput {
+		return json.NewEncoder(os.Stdout).Encode(resolved)
+	}
+	fmt.Print(resolved.Text)
+	return nil
 }
 
 func runText(ctx context.Context, args []string) error {
@@ -191,10 +233,12 @@ func usage(out *os.File) {
 Usage:
   gii init [--repo-dir ./.gii-data] [--data-repo URL] [--branch data]
   gii update [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data]
+  gii resolve <normref> [--date YYYY-MM-DD] [--json] [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data] [--no-update]
   gii text <gesetz> [--date YYYY-MM-DD] [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data] [--no-update]
 
 Examples:
   gii init --repo-dir ./.gii-data
+  gii resolve "§ 157 BGB" --date 2024-02-15 --json
   gii text BGB --date 2024-02-15
   gii text "Bürgerliches Gesetzbuch"
   gii update --data-repo https://github.com/QuantLaw/gesetze-im-internet.git`)

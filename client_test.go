@@ -2,6 +2,7 @@ package gii_test
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"os/exec"
@@ -74,6 +75,39 @@ func TestBDD_UnbekanntesGesetzLiefertTypedError(t *testing.T) {
 	}
 }
 
+func TestBDD_NormreferenzZuStichtagAufloesen(t *testing.T) {
+	source := newDataBranchFixture(t,
+		version{date: "2024-01-01", enbez: "§ 157", paragraph: "Vertraege sind nach alter Fassung auszulegen."},
+		version{date: "2024-02-01", enbez: "§ 157", paragraph: "Vertraege sind nach Treu und Glauben auszulegen."},
+	)
+	client := gii.New(gii.Options{RepositoryURL: source, CacheDir: t.TempDir()})
+
+	resolved, err := client.ResolveNorm(context.Background(), "§ 157 BGB", mustDate(t, "2024-02-15"))
+	if err != nil {
+		t.Fatalf("ResolveNorm() error = %v", err)
+	}
+
+	if resolved.LawID != "bgb" || resolved.JurAbk != "BGB" || resolved.Locator != "§ 157 BGB" {
+		t.Fatalf("unexpected resolved metadata: %#v", resolved)
+	}
+	if resolved.XMLPath != "data/items/bgb/BJNR001950896.xml" || resolved.Revision == "" {
+		t.Fatalf("missing provenance: %#v", resolved)
+	}
+	if !strings.Contains(resolved.Text, "Treu und Glauben") {
+		t.Fatalf("expected resolved norm text, got:\n%s", resolved.Text)
+	}
+}
+
+func TestBDD_UnbekannteNormLiefertTypedError(t *testing.T) {
+	source := newDataBranchFixture(t, version{date: "2024-01-01", enbez: "§ 1", paragraph: "Text."})
+	client := gii.New(gii.Options{RepositoryURL: source, CacheDir: t.TempDir()})
+
+	_, err := client.ResolveNorm(context.Background(), "§ 999 BGB", mustDate(t, "2024-01-15"))
+	if !errors.Is(err, gii.ErrNormNotFound) {
+		t.Fatalf("expected ErrNormNotFound, got %v", err)
+	}
+}
+
 func TestBDD_CLIAktualisiertCacheUndGibtWortlautAus(t *testing.T) {
 	// Given ein leerer lokaler Cache.
 	source := newDataBranchFixture(t,
@@ -97,6 +131,36 @@ func TestBDD_CLIAktualisiertCacheUndGibtWortlautAus(t *testing.T) {
 	stdout := string(out)
 	if !strings.Contains(stdout, "CLI gibt diese Fassung aus.") {
 		t.Fatalf("expected wording on stdout, got:\n%s", stdout)
+	}
+}
+
+func TestBDD_CLIResolvedNormAlsJSON(t *testing.T) {
+	source := newDataBranchFixture(t, version{date: "2024-02-01", enbez: "§ 157", paragraph: "JSON Normtext."})
+	exe := buildCLI(t)
+
+	cmd := exec.Command(exe, "resolve", "§ 157 BGB", "--date", "2024-02-15", "--data-repo", source, "--cache-dir", t.TempDir(), "--json")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("gii resolve failed: %v\n%s", err, out)
+	}
+
+	var resolved struct {
+		Revision string `json:"revision"`
+		LawID    string `json:"lawId"`
+		LawTitle string `json:"lawTitle"`
+		JurAbk   string `json:"jurabk"`
+		Locator  string `json:"locator"`
+		XMLPath  string `json:"xmlPath"`
+		Text     string `json:"text"`
+	}
+	if err := json.Unmarshal(out, &resolved); err != nil {
+		t.Fatalf("invalid JSON:\n%s\n%v", out, err)
+	}
+	if resolved.Revision == "" || resolved.LawID != "bgb" || resolved.JurAbk != "BGB" || resolved.Locator != "§ 157 BGB" {
+		t.Fatalf("unexpected JSON metadata: %#v", resolved)
+	}
+	if !strings.Contains(resolved.Text, "JSON Normtext.") {
+		t.Fatalf("expected norm text in JSON, got %#v", resolved)
 	}
 }
 
@@ -148,6 +212,7 @@ func TestDefaultDataRepositoryIsPublicArchiveNotCodeModule(t *testing.T) {
 
 type version struct {
 	date      string
+	enbez     string
 	paragraph string
 }
 
@@ -156,7 +221,7 @@ func newDataBranchFixture(t *testing.T, versions ...version) string {
 	repo := filepath.Join(t.TempDir(), "source")
 	runGit(t, "", nil, "init", "--initial-branch=data", repo)
 	for _, v := range versions {
-		writeFixtureData(t, repo, v.paragraph)
+		writeFixtureData(t, repo, v.enbez, v.paragraph)
 		runGitWithDate(t, repo, v.date, "add", "data", "README.md")
 		runGitWithDate(t, repo, v.date, "commit", "-m", "scrape "+v.date)
 		runGitWithDate(t, repo, v.date, "tag", v.date)
@@ -164,8 +229,11 @@ func newDataBranchFixture(t *testing.T, versions ...version) string {
 	return repo
 }
 
-func writeFixtureData(t *testing.T, repo, paragraph string) {
+func writeFixtureData(t *testing.T, repo, enbez, paragraph string) {
 	t.Helper()
+	if enbez == "" {
+		enbez = "§ 1"
+	}
 	mustWrite(t, filepath.Join(repo, "README.md"), "fixture\n")
 	mustWrite(t, filepath.Join(repo, "data", "toc.xml"), `<?xml version="1.0" encoding="UTF-8" ?>
 <items>
@@ -175,7 +243,7 @@ func writeFixtureData(t *testing.T, repo, paragraph string) {
   </item>
 </items>
 `)
-	mustWrite(t, filepath.Join(repo, "data", "items", "bgb", "BJNR001950896.xml"), `<norm builddate="20240101000000" doknr="BJNR001950896BJNE000102377"><metadaten><jurabk>BGB</jurabk><enbez>§ 1</enbez><titel format="parat">Beginn der Rechtsfähigkeit</titel></metadaten><textdaten><text format="XML"><Content><P>`+paragraph+`</P></Content></text><fussnoten/></textdaten></norm>
+	mustWrite(t, filepath.Join(repo, "data", "items", "bgb", "BJNR001950896.xml"), `<norm builddate="20240101000000" doknr="BJNR001950896BJNE000102377"><metadaten><jurabk>BGB</jurabk><enbez>`+enbez+`</enbez><titel format="parat">Beginn der Rechtsfähigkeit</titel></metadaten><textdaten><text format="XML"><Content><P>`+paragraph+`</P></Content></text><fussnoten/></textdaten></norm>
 `)
 }
 

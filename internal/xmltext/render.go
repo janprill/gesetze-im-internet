@@ -14,7 +14,9 @@ type Document struct {
 }
 
 type norm struct {
-	Metadata struct {
+	BuildDate string `xml:"builddate,attr"`
+	DokNR     string `xml:"doknr,attr"`
+	Metadata  struct {
 		JurAbk string `xml:"jurabk"`
 		EnBez  string `xml:"enbez"`
 		Title  inner  `xml:"titel"`
@@ -35,6 +37,15 @@ type norm struct {
 
 type inner struct {
 	XML string `xml:",innerxml"`
+}
+
+type NormFragment struct {
+	JurAbk    string
+	EnBez     string
+	Title     string
+	Text      string
+	DokNR     string
+	BuildDate string
 }
 
 func RenderLaw(title string, documents []Document) (string, error) {
@@ -60,6 +71,41 @@ func RenderLaw(title string, documents []Document) (string, error) {
 		}
 	}
 	return strings.TrimSpace(b.String()) + "\n", nil
+}
+
+func RenderNormByEnBez(document Document, enbez string) (*NormFragment, error) {
+	decoder := xml.NewDecoder(strings.NewReader(document.XML))
+	decoder.Strict = false
+	decoder.Entity = xml.HTMLEntity
+	needle := normalizeEnBez(enbez)
+	for {
+		token, err := decoder.Token()
+		if err == io.EOF {
+			return nil, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		start, ok := token.(xml.StartElement)
+		if !ok || start.Name.Local != "norm" {
+			continue
+		}
+		var n norm
+		if err := decoder.DecodeElement(&n, &start); err != nil {
+			return nil, err
+		}
+		if normalizeEnBez(n.Metadata.EnBez) != needle {
+			continue
+		}
+		return &NormFragment{
+			JurAbk:    strings.TrimSpace(n.Metadata.JurAbk),
+			EnBez:     strings.TrimSpace(n.Metadata.EnBez),
+			Title:     fragmentText(n.Metadata.Title.XML),
+			Text:      renderNorm(n),
+			DokNR:     strings.TrimSpace(n.DokNR),
+			BuildDate: strings.TrimSpace(n.BuildDate),
+		}, nil
+	}
 }
 
 func renderDocument(contents string) ([]string, error) {
@@ -224,6 +270,10 @@ func compactBlankLines(value string) string {
 		lastBlank = blank
 	}
 	return strings.TrimSpace(strings.Join(out, "\n"))
+}
+
+func normalizeEnBez(value string) string {
+	return strings.Join(strings.Fields(strings.TrimSpace(value)), " ")
 }
 
 func stripTagsFallback(fragment string) string {
