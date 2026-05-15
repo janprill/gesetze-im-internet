@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE dokumente SYSTEM "http://www.gesetze-im-internet.de/dtd/1.01/gii-norm.dtd">
-<dokumente builddate="20120625154003" doknr="BJNR384800998"><norm builddate="20120625154003" doknr="BJNR384800998"><metadaten><jurabk>BSG 1999</jurabk><amtabk>BSG 1999</amtabk><ausfertigung-datum manuell="ja">1998-12-19</ausfertigung-datum><fundstelle typ="amtlich"><periodikum>BGBl I</periodikum><zitstelle>1998, 3843, 3848</zitstelle></fundstelle><kurzue>Beitragssatzgesetz 1999</kurzue><langue>Gesetz zur Bestimmung der Beitragssätze
+<dokumente builddate="20260506175948" doknr="BJNR384800998"><norm builddate="20260506175948" doknr="BJNR384800998"><metadaten><jurabk>BSG 1999</jurabk><amtabk>BSG 1999</amtabk><ausfertigung-datum manuell="ja">1998-12-19</ausfertigung-datum><fundstelle typ="amtlich"><periodikum>BGBl I</periodikum><zitstelle>1998, 3843, 3848</zitstelle></fundstelle><kurzue>Beitragssatzgesetz 1999</kurzue><langue>Gesetz zur Bestimmung der Beitragssätze
 in der gesetzlichen Rentenversicherung für 1999
 und zur Bestimmung weiterer Rechengrößen der
 Sozialversicherung für 1999</langue></metadaten><textdaten><text format="XML"><Content><P/></Content></text><fussnoten><Content><P>(+++ Textnachweis ab:  1. 1.1999 +++)</P><P><BR/> Das Gesetz wurde als Artikel 5 G v. 19.12.1998 I 3843 (SVKorrG) vom Bundestag mit der Mehrheit seiner Mitglieder und mit Zustimmung des Bundesrates beschlossen. Es ist gem. Art. 11 Abs. 1 dieses G mWv 1.1.1999 in Kraft getreten.</P></Content></fussnoten></textdaten></norm>
-<norm builddate="20120625154003" doknr="BJNR384800998BJNE000100305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 1</enbez><titel format="parat">Beitragssätze in der Rentenversicherung</titel></metadaten><textdaten><text format="XML"><Content><P>Der Beitragssatz beträgt für die Zeit vom 1. April 1999 bis zum 31. Dezember 1999 in der Rentenversicherung der Arbeiter und der Angestellten 19,5 vom Hundert und in der knappschaftlichen Rentenversicherung 25,9 vom Hundert.</P></Content></text></textdaten></norm>
-<norm builddate="20120625154003" doknr="BJNR384800998BJNE000200305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 2</enbez><titel format="parat">Beitrag in der Alterssicherung der
+<norm builddate="20260506175948" doknr="BJNR384800998BJNE000100305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 1</enbez><titel format="parat">Beitragssätze in der Rentenversicherung</titel></metadaten><textdaten><text format="XML"><Content><P>Der Beitragssatz beträgt für die Zeit vom 1. April 1999 bis zum 31. Dezember 1999 in der Rentenversicherung der Arbeiter und der Angestellten 19,5 vom Hundert und in der knappschaftlichen Rentenversicherung 25,9 vom Hundert.</P></Content></text></textdaten></norm>
+<norm builddate="20260506175948" doknr="BJNR384800998BJNE000200305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 2</enbez><titel format="parat">Beitrag in der Alterssicherung der
 Landwirte</titel></metadaten><textdaten><text format="XML"><Content><P>(1) Der Beitrag in der Alterssicherung der Landwirte beträgt für die Zeit vom 1. April 1999 bis zum 31. Dezember 1999 monatlich 327 Deutsche Mark.</P><P>(2) Der Beitrag in der Alterssicherung der Landwirte beträgt für das Beitrittsgebiet für die Zeit vom 1. April 1999 bis zum 31. Dezember 1999 monatlich 276 Deutsche Mark.</P></Content> </text></textdaten></norm>
-<norm builddate="20120625154003" doknr="BJNR384800998BJNE000300305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 3</enbez><titel format="parat">Beitragszuschuß in der Alterssicherung
+<norm builddate="20260506175948" doknr="BJNR384800998BJNE000300305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 3</enbez><titel format="parat">Beitragszuschuß in der Alterssicherung
 der Landwirte</titel></metadaten><textdaten><text format="XML"><Content><P>(1) In Anlage 1 des Gesetzes über die Alterssicherung der Landwirte wird der monatliche Zuschußbetrag für die Zeit vom 1. April 1999 bis zum 31. Dezember 1999 wie folgt festgesetzt: <BR/><table frame="none" tocentry="%yes;">
 	<tgroup align="left" char="" charoff="50" cols="2" colsep="0" rowsep="0">
 		<colspec colname="col1" colnum="1" colwidth="40*"/>
@@ -234,7 +234,7 @@ der Landwirte</titel></metadaten><textdaten><text format="XML"><Content><P>(1) I
 			</tbody>
 		</tgroup>
 	</table> </P></Content> </text></textdaten></norm>
-<norm builddate="20120625154003" doknr="BJNR384800998BJNE000400305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 4</enbez><titel format="parat">Umrechnungsfaktoren für den Versorgungsausgleich
+<norm builddate="20260506175948" doknr="BJNR384800998BJNE000400305"><metadaten><jurabk>BSG 1999</jurabk><enbez>§ 4</enbez><titel format="parat">Umrechnungsfaktoren für den Versorgungsausgleich
 in der Rentenversicherung</titel></metadaten><textdaten><text format="XML"><Content><P>(1) Die auf Grund des vorläufigen Durchschnittsentgelts und des Beitragssatzes berechneten Faktoren betragen für die Zeit vom 1. April 1999 bis zum 31. Dezember 1999 <BR/><table frame="none" tocentry="%yes;">
 	<tgroup align="left" char="" charoff="50" cols="4" colsep="0" rowsep="0">
 		<colspec colname="col1" colnum="1" colwidth="5*"/>
