@@ -8,4 +8,7 @@ var (
 
 	// ErrRevisionNotFound is returned when the data branch has no commit at or before the selected date.
 	ErrRevisionNotFound = errs.RevisionNotFound
+
+	// ErrLocalCacheMissing is returned by offline reads when the configured local data checkout does not exist yet.
+	ErrLocalCacheMissing = errs.LocalCacheMissing
 )

@@ -22,3 +22,15 @@ Feature: Gesetze im Internet als Go Library und CLI nutzen
     When ich `gii update --repo-dir .gii-data` ausfuehre
     Then wird dort ein Git-Repo mit data-Branch geklont oder aktualisiert
     And spaetere Aufrufe koennen `--repo-dir .gii-data --no-update` nutzen
+
+  Scenario: MCP-Server liefert Gesetzestext und Discovery offline
+    Given ein zuvor mit `gii update --repo-dir .gii-data` aktualisierter Datencheckout
+    When ich `gii mcp --repo-dir .gii-data` starte
+    Then kann ein MCP-Client `law_text` fuer BGB zum Stichtag aufrufen
+    And `list_laws` und `search_laws` finden das BGB in den lokalen Metadaten
+
+  Scenario: MCP-Read-Tools aktualisieren nicht implizit
+    Given noch kein lokaler Datencheckout existiert
+    When ein MCP-Client `law_text` oder `list_laws` aufruft
+    Then wird ein lokaler-cache-fehlt-Fehler gemeldet
+    And erst `gii update` per Cron oder das Tool `update_cache` aktualisiert den Checkout

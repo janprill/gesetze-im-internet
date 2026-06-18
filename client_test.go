@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/janprill/gii"
+	"github.com/janprill/gii/mcpserver"
+	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 func TestBDD_GesetzestextZuHistorischemDatumAbrufen(t *testing.T) {
@@ -140,6 +142,166 @@ func TestBDD_CLIKlonteExplizitesDatenrepoFuerProjekt(t *testing.T) {
 	}
 }
 
+func TestBDD_DiscoveryFindetBGBLokalOhneUpdate(t *testing.T) {
+	source := newDataBranchFixture(t, version{date: "2024-01-01", paragraph: "Discovery-Fassung."})
+	repoDir := filepath.Join(t.TempDir(), ".gii-data")
+	updater := gii.New(gii.Options{RepositoryURL: source, RepositoryDir: repoDir})
+	if err := updater.Update(context.Background()); err != nil {
+		t.Fatalf("Update() error = %v", err)
+	}
+
+	// A different, invalid RepositoryURL proves that discovery reads only the local checkout.
+	client := gii.New(gii.Options{RepositoryURL: "file:///does-not-exist", RepositoryDir: repoDir})
+	listed, err := client.ListLawsWithoutUpdate(context.Background(), mustDate(t, "2024-01-15"), 10, 0)
+	if err != nil {
+		t.Fatalf("ListLawsWithoutUpdate() error = %v", err)
+	}
+	if listed.Total != 1 || len(listed.Laws) != 1 || listed.Laws[0].ID != "bgb" {
+		t.Fatalf("expected listed BGB, got %#v", listed)
+	}
+
+	found, err := client.SearchLawsWithoutUpdate(context.Background(), "BGB", mustDate(t, "2024-01-15"), 10, 0)
+	if err != nil {
+		t.Fatalf("SearchLawsWithoutUpdate() error = %v", err)
+	}
+	if found.Total != 1 || len(found.Laws) != 1 || found.Laws[0].Title != "Bürgerliches Gesetzbuch" {
+		t.Fatalf("expected search to find BGB, got %#v", found)
+	}
+}
+
+func TestBDD_MCPToolsLiefernHistorischenTextUndDiscovery(t *testing.T) {
+	source := newDataBranchFixture(t,
+		version{date: "2024-01-01", paragraph: "Alter MCP-Text."},
+		version{date: "2024-02-01", paragraph: "Neuer MCP-Text."},
+	)
+	repoDir := filepath.Join(t.TempDir(), ".gii-data")
+	client := gii.New(gii.Options{RepositoryURL: source, RepositoryDir: repoDir})
+	if err := client.Update(context.Background()); err != nil {
+		t.Fatalf("Update() error = %v", err)
+	}
+	session, cleanup := newMCPSession(t, client)
+	defer cleanup()
+
+	textResult, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "law_text",
+		Arguments: map[string]any{"query": "BGB", "date": "2024-01-15"},
+	})
+	if err != nil {
+		t.Fatalf("law_text CallTool error = %v", err)
+	}
+	if textResult.IsError || !strings.Contains(toolText(textResult), "Alter MCP-Text.") || strings.Contains(toolText(textResult), "Neuer MCP-Text.") {
+		t.Fatalf("unexpected law_text result: %#v text=%q", textResult, toolText(textResult))
+	}
+
+	listResult, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "list_laws",
+		Arguments: map[string]any{"date": "2024-01-15", "limit": 5},
+	})
+	if err != nil {
+		t.Fatalf("list_laws CallTool error = %v", err)
+	}
+	if listResult.IsError || !strings.Contains(toolText(listResult), "Bürgerliches Gesetzbuch") {
+		t.Fatalf("unexpected list_laws result: %#v text=%q", listResult, toolText(listResult))
+	}
+
+	searchResult, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "search_laws",
+		Arguments: map[string]any{"query": "BGB", "date": "2024-01-15"},
+	})
+	if err != nil {
+		t.Fatalf("search_laws CallTool error = %v", err)
+	}
+	if searchResult.IsError || !strings.Contains(toolText(searchResult), `"id":"bgb"`) {
+		t.Fatalf("unexpected search_laws result: %#v text=%q", searchResult, toolText(searchResult))
+	}
+}
+
+func TestBDD_MCPReadToolsBrauchenExplizitesUpdate(t *testing.T) {
+	source := newDataBranchFixture(t, version{date: "2024-01-01", paragraph: "Nach explizitem Update."})
+	repoDir := filepath.Join(t.TempDir(), ".gii-data")
+	client := gii.New(gii.Options{RepositoryURL: source, RepositoryDir: repoDir})
+	session, cleanup := newMCPSession(t, client)
+	defer cleanup()
+
+	missing, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "law_text",
+		Arguments: map[string]any{"query": "BGB", "date": "2024-01-15"},
+	})
+	if err != nil {
+		t.Fatalf("law_text without cache CallTool error = %v", err)
+	}
+	if !missing.IsError || !strings.Contains(toolText(missing), "local_cache_missing") {
+		t.Fatalf("expected local_cache_missing tool error, got %#v text=%q", missing, toolText(missing))
+	}
+	if _, err := os.Stat(filepath.Join(repoDir, ".git")); !os.IsNotExist(err) {
+		t.Fatalf("read tool should not create/update repo; stat err = %v", err)
+	}
+
+	updated, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{Name: "update_cache", Arguments: map[string]any{}})
+	if err != nil {
+		t.Fatalf("update_cache CallTool error = %v", err)
+	}
+	if updated.IsError || !strings.Contains(toolText(updated), "updated") {
+		t.Fatalf("unexpected update_cache result: %#v text=%q", updated, toolText(updated))
+	}
+
+	ok, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "law_text",
+		Arguments: map[string]any{"query": "BGB", "date": "2024-01-15"},
+	})
+	if err != nil {
+		t.Fatalf("law_text after update CallTool error = %v", err)
+	}
+	if ok.IsError || !strings.Contains(toolText(ok), "Nach explizitem Update.") {
+		t.Fatalf("expected law_text after update, got %#v text=%q", ok, toolText(ok))
+	}
+}
+
+func TestBDD_MCPMeldetUngueltigesDatumUndUnbekanntesGesetzTypisiert(t *testing.T) {
+	source := newDataBranchFixture(t, version{date: "2024-01-01", paragraph: "Text."})
+	repoDir := filepath.Join(t.TempDir(), ".gii-data")
+	client := gii.New(gii.Options{RepositoryURL: source, RepositoryDir: repoDir})
+	if err := client.Update(context.Background()); err != nil {
+		t.Fatalf("Update() error = %v", err)
+	}
+	session, cleanup := newMCPSession(t, client)
+	defer cleanup()
+
+	invalidDate, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "law_text",
+		Arguments: map[string]any{"query": "BGB", "date": "15.01.2024"},
+	})
+	if err != nil {
+		t.Fatalf("invalid date CallTool error = %v", err)
+	}
+	if !invalidDate.IsError || !strings.Contains(toolText(invalidDate), "invalid_date") {
+		t.Fatalf("expected invalid_date tool error, got %#v text=%q", invalidDate, toolText(invalidDate))
+	}
+
+	unknown, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "law_text",
+		Arguments: map[string]any{"query": "UnbekanntG", "date": "2024-01-15"},
+	})
+	if err != nil {
+		t.Fatalf("unknown law CallTool error = %v", err)
+	}
+	if !unknown.IsError || !strings.Contains(toolText(unknown), "law_not_found") {
+		t.Fatalf("expected law_not_found tool error, got %#v text=%q", unknown, toolText(unknown))
+	}
+}
+
+func TestBDD_CLIUsageZeigtMCP(t *testing.T) {
+	exe := buildCLI(t)
+	cmd := exec.Command(exe, "help")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("gii help failed: %v\n%s", err, out)
+	}
+	if !strings.Contains(string(out), "gii mcp") {
+		t.Fatalf("expected mcp in usage, got:\n%s", out)
+	}
+}
+
 func TestDefaultDataRepositoryIsPublicArchiveNotCodeModule(t *testing.T) {
 	if gii.DefaultRepositoryURL != "https://github.com/QuantLaw/gesetze-im-internet.git" {
 		t.Fatalf("unexpected default data repository: %s", gii.DefaultRepositoryURL)
@@ -177,6 +339,49 @@ func writeFixtureData(t *testing.T, repo, paragraph string) {
 `)
 	mustWrite(t, filepath.Join(repo, "data", "items", "bgb", "BJNR001950896.xml"), `<norm builddate="20240101000000" doknr="BJNR001950896BJNE000102377"><metadaten><jurabk>BGB</jurabk><enbez>§ 1</enbez><titel format="parat">Beginn der Rechtsfähigkeit</titel></metadaten><textdaten><text format="XML"><Content><P>`+paragraph+`</P></Content></text><fussnoten/></textdaten></norm>
 `)
+}
+
+func newMCPSession(t *testing.T, client *gii.Client) (*mcpsdk.ClientSession, func()) {
+	t.Helper()
+	serverTransport, clientTransport := mcpsdk.NewInMemoryTransports()
+	ctx, cancel := context.WithCancel(context.Background())
+	server := mcpserver.New(client)
+	errc := make(chan error, 1)
+	go func() {
+		errc <- server.Run(ctx, serverTransport)
+	}()
+	mcpClient := mcpsdk.NewClient(&mcpsdk.Implementation{Name: "gii-test", Version: "v0.0.0"}, nil)
+	session, err := mcpClient.Connect(ctx, clientTransport, nil)
+	if err != nil {
+		cancel()
+		t.Fatalf("MCP client connect failed: %v", err)
+	}
+	cleanup := func() {
+		_ = session.Close()
+		cancel()
+		select {
+		case err := <-errc:
+			if err != nil && !errors.Is(err, context.Canceled) {
+				t.Logf("MCP server stopped with error: %v", err)
+			}
+		case <-time.After(2 * time.Second):
+			t.Log("MCP server did not stop within timeout")
+		}
+	}
+	return session, cleanup
+}
+
+func toolText(result *mcpsdk.CallToolResult) string {
+	if result == nil {
+		return ""
+	}
+	var b strings.Builder
+	for _, content := range result.Content {
+		if text, ok := content.(*mcpsdk.TextContent); ok {
+			b.WriteString(text.Text)
+		}
+	}
+	return b.String()
 }
 
 func buildCLI(t *testing.T) string {

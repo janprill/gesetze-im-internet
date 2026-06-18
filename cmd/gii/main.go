@@ -30,6 +30,8 @@ func run(ctx context.Context, args []string) error {
 		return runUpdate(ctx, args[1:])
 	case "init":
 		return runInit(ctx, args[1:])
+	case "mcp":
+		return runMCP(ctx, args[1:])
 	case "help", "--help", "-h":
 		usage(os.Stdout)
 		return nil
@@ -149,7 +151,7 @@ func parseOptionalDate(value string) (time.Time, error) {
 
 func flagsFirst(args []string) []string {
 	stringFlags := map[string]bool{
-		"date": true, "today": true, "data-repo": true, "repo-url": true, "cache-dir": true, "repo-dir": true, "branch": true, "git": true,
+		"date": true, "today": true, "transport": true, "addr": true, "data-repo": true, "repo-url": true, "cache-dir": true, "repo-dir": true, "branch": true, "git": true,
 	}
 	var flags, positional []string
 	for i := 0; i < len(args); {
@@ -192,10 +194,13 @@ Usage:
   gii init [--repo-dir ./.gii-data] [--data-repo URL] [--branch data]
   gii update [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data]
   gii text <gesetz> [--date YYYY-MM-DD] [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data] [--no-update]
+  gii mcp [--transport stdio|http|sse] [--addr 127.0.0.1:8080] [--data-repo URL] [--cache-dir DIR | --repo-dir DIR] [--branch data]
 
 Examples:
   gii init --repo-dir ./.gii-data
   gii text BGB --date 2024-02-15
   gii text "Bürgerliches Gesetzbuch"
-  gii update --data-repo https://github.com/QuantLaw/gesetze-im-internet.git`)
+  gii update --data-repo https://github.com/QuantLaw/gesetze-im-internet.git
+  gii mcp --repo-dir ./.gii-data
+  gii mcp --transport http --addr 127.0.0.1:8080 --repo-dir ./.gii-data`)
 }

@@ -154,6 +154,8 @@ Wichtige Methoden:
 - `client.LawText(ctx, query, date)` aktualisiert den Checkout und gibt den Wortlaut zum Stichtag zurück.
 - `client.LawTextToday(ctx, query)` nutzt das heutige Datum.
 - `client.LawTextWithoutUpdate(ctx, query, date)` arbeitet offline mit einem bereits vorhandenen Checkout.
+- `client.ListLawsWithoutUpdate(ctx, date, limit, offset)` listet Gesetze/Rechtsverordnungen offline aus `data/toc.xml`.
+- `client.SearchLawsWithoutUpdate(ctx, query, date, limit, offset)` sucht offline nach ID, Titel oder exakter XML-Abkürzung.
 
 `query` kann sein:
 
@@ -174,6 +176,7 @@ Typed Errors:
 
 - `gii.ErrLawNotFound`, wenn kein passendes Gesetz gefunden wurde.
 - `gii.ErrRevisionNotFound`, wenn der Datenbranch für den Stichtag noch keinen Commit enthält.
+- `gii.ErrLocalCacheMissing`, wenn ein Offline-Aufruf ohne vorhandenen lokalen Checkout ausgeführt wird.
 
 ### Offline-/Batch-Nutzung
 
@@ -215,6 +218,57 @@ gii text "Bürgerliches Gesetzbuch"
 gii text BGB --date 2024-02-15 --repo-dir ./.gii-data --no-update
 ```
 
+### MCP-Server
+
+`gii` kann als Model-Context-Protocol-Server gestartet werden. MCP-Read-Tools arbeiten bewusst **offline** und führen kein implizites `git fetch` aus. Aktualisiert den Datencheckout daher vorher explizit:
+
+```sh
+gii update --repo-dir ./.gii-data
+```
+
+Für lokale MCP-Clients ist `stdio` der Default:
+
+```sh
+gii mcp --repo-dir ./.gii-data
+```
+
+Beispiel-Konfiguration für einen MCP-Client:
+
+```json
+{
+  "mcpServers": {
+    "gii": {
+      "command": "gii",
+      "args": ["mcp", "--repo-dir", "/absolute/path/to/.gii-data"]
+    }
+  }
+}
+```
+
+Für serviceartige Nutzung steht Streamable HTTP bereit (`--transport http`):
+
+```sh
+gii mcp --transport http --addr 127.0.0.1:8080 --repo-dir ./.gii-data
+```
+
+Für ältere MCP-Clients kann der SSE-Transport verwendet werden:
+
+```sh
+gii mcp --transport sse --addr 127.0.0.1:8080 --repo-dir ./.gii-data
+```
+
+Verfügbare MCP-Tools:
+
+- `law_text`: Plaintext eines Gesetzes zum Stichtag; Eingaben: `query`, optional `date` (`YYYY-MM-DD`). Ausgabe: Plaintext plus strukturierte JSON-Metadaten (`id`, `title`, `date`, `revision`, `xml_files`, `text`).
+- `list_laws`: paginierte Discovery aus dem lokalen Checkout; Eingaben: optional `date`, `limit`, `offset`.
+- `search_laws`: Suche nach ID, Titel oder exakter XML-Abkürzung; Eingaben: `query`, optional `date`, `limit`, `offset`.
+- `update_cache`: explizites Update des lokalen Checkouts. Für regelmäßige Aktualisierung ist ein Cronjob meist besser:
+
+```cron
+# täglich um 04:30 Uhr den lokalen gii-Datencheckout aktualisieren
+30 4 * * * /usr/local/bin/gii update --repo-dir /srv/gii/.gii-data >>/var/log/gii-update.log 2>&1
+```
+
 Wichtige Flags:
 
 - `--data-repo`: Git-Repository mit `data`-Branch; Standard ist `https://github.com/QuantLaw/gesetze-im-internet.git`.
@@ -222,6 +276,8 @@ Wichtige Flags:
 - `--cache-dir`: lokaler Cache; Clone liegt unter `<cache-dir>/repo`; Standard ist das OS-User-Cache-Verzeichnis.
 - `--repo-dir`: expliziter Pfad zu einem lokalen Datenrepo, z. B. `./.gii-data`.
 - `--branch`: Datenbranch; Standard ist `data`.
+- `--transport`: MCP-Transport für `gii mcp`: `stdio` (Default), `http` (Streamable HTTP) oder `sse`.
+- `--addr`: Listen-Adresse für `gii mcp --transport http|sse`; Standard ist `127.0.0.1:8080`.
 - `--no-update`: vorhandenen Checkout offline verwenden.
 
 ### Verhalten und Grenzen

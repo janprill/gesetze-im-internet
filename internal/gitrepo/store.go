@@ -33,6 +33,13 @@ type LawMatch struct {
 	XMLFiles []string
 }
 
+// LawInfo is compact metadata for one law or ordinance from data/toc.xml.
+type LawInfo struct {
+	ID    string
+	Title string
+	Link  string
+}
+
 type tocItem struct {
 	Title string `xml:"title"`
 	Link  string `xml:"link"`
@@ -71,6 +78,9 @@ func (s *Store) Update(ctx context.Context) error {
 func (s *Store) RevisionForDate(ctx context.Context, date time.Time) (string, error) {
 	if date.IsZero() {
 		date = time.Now()
+	}
+	if err := s.ensureRepository(); err != nil {
+		return "", err
 	}
 	cutoff := endOfDayUTC(date).Format(time.RFC3339)
 	out, err := s.git(ctx, s.options.CacheDir, "rev-list", "-n", "1", "--before="+cutoff, "refs/remotes/origin/"+s.options.DataBranch)
@@ -119,6 +129,52 @@ func (s *Store) FindLaw(ctx context.Context, rev, query string) (LawMatch, error
 	}
 
 	return LawMatch{}, fmt.Errorf("%w: %q", errs.LawNotFound, query)
+}
+
+// ListLaws returns compact metadata for all laws in data/toc.xml at rev.
+func (s *Store) ListLaws(ctx context.Context, rev string) ([]LawInfo, error) {
+	items, err := s.toc(ctx, rev)
+	if err != nil {
+		return nil, err
+	}
+	laws := make([]LawInfo, 0, len(items))
+	for _, item := range items {
+		if item.ID == "" {
+			continue
+		}
+		laws = append(laws, lawInfoFromTOC(item))
+	}
+	return laws, nil
+}
+
+// SearchLaws returns compact metadata for laws whose ID, title, or exact jurabk matches query.
+func (s *Store) SearchLaws(ctx context.Context, rev, query string) ([]LawInfo, error) {
+	q := normalize(query)
+	if q == "" {
+		return nil, fmt.Errorf("%w: empty query", errs.LawNotFound)
+	}
+	items, err := s.toc(ctx, rev)
+	if err != nil {
+		return nil, err
+	}
+
+	jurAbkIDs, err := s.findIDsByJurAbk(ctx, rev, query)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]bool, len(items))
+	matches := make([]LawInfo, 0)
+	for _, item := range items {
+		if item.ID == "" || seen[item.ID] {
+			continue
+		}
+		if strings.Contains(normalize(item.ID), q) || strings.Contains(normalize(item.Title), q) || jurAbkIDs[item.ID] {
+			matches = append(matches, lawInfoFromTOC(item))
+			seen[item.ID] = true
+		}
+	}
+	return matches, nil
 }
 
 func (s *Store) matchForID(ctx context.Context, rev, id, title string) (LawMatch, error) {
@@ -174,7 +230,7 @@ func (s *Store) xmlFilesForID(ctx context.Context, rev, id string) ([]string, er
 
 func (s *Store) findByJurAbk(ctx context.Context, rev string, items []tocItem, query string) (tocItem, bool, error) {
 	needle := "<jurabk>" + query + "</jurabk>"
-	out, err := s.git(ctx, s.options.CacheDir, "grep", "-F", "-l", needle, rev, "--", "data/items")
+	out, err := s.git(ctx, s.options.CacheDir, "grep", "-i", "-F", "-l", needle, rev, "--", "data/items")
 	if err != nil {
 		if exit, ok := err.(*GitError); ok && exit.ExitCode == 1 {
 			return tocItem{}, false, nil
@@ -199,6 +255,42 @@ func (s *Store) findByJurAbk(ctx context.Context, rev string, items []tocItem, q
 		}
 	}
 	return tocItem{ID: id, Title: id}, true, nil
+}
+
+func (s *Store) findIDsByJurAbk(ctx context.Context, rev, query string) (map[string]bool, error) {
+	ids := map[string]bool{}
+	query = strings.TrimSpace(query)
+	if query == "" {
+		return ids, nil
+	}
+	needle := "<jurabk>" + query + "</jurabk>"
+	out, err := s.git(ctx, s.options.CacheDir, "grep", "-i", "-F", "-l", needle, rev, "--", "data/items")
+	if err != nil {
+		if exit, ok := err.(*GitError); ok && exit.ExitCode == 1 {
+			return ids, nil
+		}
+		return nil, err
+	}
+	for _, line := range strings.Split(out, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.HasSuffix(strings.ToLower(line), ".xml") {
+			continue
+		}
+		if id := itemIDFromPath(line); id != "" {
+			ids[id] = true
+		}
+	}
+	return ids, nil
+}
+
+func (s *Store) ensureRepository() error {
+	if _, err := os.Stat(filepath.Join(s.options.CacheDir, ".git")); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("%w: %s", errs.LocalCacheMissing, s.options.CacheDir)
+		}
+		return err
+	}
+	return nil
 }
 
 func (s *Store) git(ctx context.Context, dir string, args ...string) (string, error) {
@@ -264,6 +356,10 @@ func idFromLink(link string) string {
 		return parts[len(parts)-2]
 	}
 	return ""
+}
+
+func lawInfoFromTOC(item tocItem) LawInfo {
+	return LawInfo{ID: item.ID, Title: strings.TrimSpace(item.Title), Link: strings.TrimSpace(item.Link)}
 }
 
 func itemIDFromPath(path string) string {
