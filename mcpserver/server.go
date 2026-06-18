@@ -35,9 +35,15 @@ func New(client *gii.Client) *mcp.Server {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "law_text",
 		Title:       "Gesetzestext abrufen",
-		Description: "Ruft den Plaintext eines Gesetzes zum Stichtag aus dem lokalen gii-Datencheckout ab. Führt kein implizites Update aus.",
+		Description: "Ruft den Plaintext eines ganzen Gesetzes oder optional einer einzelnen Norm zum Stichtag aus dem lokalen gii-Datencheckout ab. Führt kein implizites Update aus.",
 		Annotations: readOnlyAnnotations("Gesetzestext abrufen"),
 	}, tools.lawText)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "norm_text",
+		Title:       "Einzelnorm abrufen",
+		Description: "Ruft token-sparsam nur eine einzelne Norm eines Gesetzes ab, z.B. query=BGB und norm=280 oder § 280. Führt kein implizites Update aus.",
+		Annotations: readOnlyAnnotations("Einzelnorm abrufen"),
+	}, tools.normText)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "list_laws",
 		Title:       "Gesetze listen",
@@ -88,6 +94,13 @@ type toolset struct {
 
 type lawTextInput struct {
 	Query string `json:"query" jsonschema:"Gesetz-ID, amtliche Abkürzung oder Titel, z.B. BGB"`
+	Norm  string `json:"norm,omitempty" jsonschema:"Optionale Einzelnorm, z.B. 280 oder § 280. Ohne norm wird der ganze Gesetzestext geliefert."`
+	Date  string `json:"date,omitempty" jsonschema:"Optionaler Stichtag im Format YYYY-MM-DD; default ist heute gemäß Server-Konfiguration"`
+}
+
+type normTextInput struct {
+	Query string `json:"query" jsonschema:"Gesetz-ID, amtliche Abkürzung oder Titel, z.B. BGB"`
+	Norm  string `json:"norm" jsonschema:"Einzelnorm, z.B. 280 oder § 280"`
 	Date  string `json:"date,omitempty" jsonschema:"Optionaler Stichtag im Format YYYY-MM-DD; default ist heute gemäß Server-Konfiguration"`
 }
 
@@ -95,6 +108,7 @@ type lawTextOutput struct {
 	Query    string   `json:"query"`
 	ID       string   `json:"id"`
 	Title    string   `json:"title"`
+	Norm     string   `json:"norm,omitempty"`
 	Date     string   `json:"date"`
 	Revision string   `json:"revision"`
 	XMLFiles []string `json:"xml_files"`
@@ -138,14 +152,30 @@ type updateCacheOutput struct {
 }
 
 func (t *toolset) lawText(ctx context.Context, _ *mcp.CallToolRequest, input lawTextInput) (*mcp.CallToolResult, lawTextOutput, error) {
-	if strings.TrimSpace(input.Query) == "" {
+	return t.lookupText(ctx, input.Query, input.Norm, input.Date, false)
+}
+
+func (t *toolset) normText(ctx context.Context, _ *mcp.CallToolRequest, input normTextInput) (*mcp.CallToolResult, lawTextOutput, error) {
+	return t.lookupText(ctx, input.Query, input.Norm, input.Date, true)
+}
+
+func (t *toolset) lookupText(ctx context.Context, query, norm, dateValue string, requireNorm bool) (*mcp.CallToolResult, lawTextOutput, error) {
+	if strings.TrimSpace(query) == "" {
 		return nil, lawTextOutput{}, toolError("invalid_query", "query must not be empty", nil)
 	}
-	date, err := parseToolDate(input.Date)
+	if requireNorm && strings.TrimSpace(norm) == "" {
+		return nil, lawTextOutput{}, toolError("invalid_norm", "norm must not be empty", nil)
+	}
+	date, err := parseToolDate(dateValue)
 	if err != nil {
 		return nil, lawTextOutput{}, err
 	}
-	law, err := t.client.LawTextWithoutUpdate(ctx, input.Query, date)
+	var law *gii.Law
+	if strings.TrimSpace(norm) == "" {
+		law, err = t.client.LawTextWithoutUpdate(ctx, query, date)
+	} else {
+		law, err = t.client.LawNormTextWithoutUpdate(ctx, query, norm, date)
+	}
 	if err != nil {
 		return nil, lawTextOutput{}, mapReadError(err)
 	}
@@ -153,6 +183,7 @@ func (t *toolset) lawText(ctx context.Context, _ *mcp.CallToolRequest, input law
 		Query:    law.Query,
 		ID:       law.ID,
 		Title:    law.Title,
+		Norm:     law.Norm,
 		Date:     law.Date.Format("2006-01-02"),
 		Revision: law.Revision,
 		XMLFiles: append([]string(nil), law.XMLFiles...),
@@ -272,6 +303,8 @@ func mapReadError(err error) error {
 		return toolError("local_cache_missing", "local gii data checkout is missing; run `gii update --repo-dir ...` or call update_cache first", err)
 	case errors.Is(err, gii.ErrRevisionNotFound):
 		return toolError("revision_not_found", "no local data revision exists at or before the requested date", err)
+	case errors.Is(err, gii.ErrNormNotFound):
+		return toolError("norm_not_found", "individual norm could not be resolved for the requested law", err)
 	case errors.Is(err, gii.ErrLawNotFound):
 		return toolError("law_not_found", "law could not be resolved for the requested query", err)
 	default:

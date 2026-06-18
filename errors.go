@@ -6,6 +6,9 @@ var (
 	// ErrLawNotFound is returned when no law can be resolved for a query at the selected revision.
 	ErrLawNotFound = errs.LawNotFound
 
+	// ErrNormNotFound is returned when a law exists, but the requested individual norm cannot be resolved.
+	ErrNormNotFound = errs.NormNotFound
+
 	// ErrRevisionNotFound is returned when the data branch has no commit at or before the selected date.
 	ErrRevisionNotFound = errs.RevisionNotFound
 

@@ -27,6 +27,7 @@ Feature: Gesetze im Internet als Go Library und CLI nutzen
     Given ein zuvor mit `gii update --repo-dir .gii-data` aktualisierter Datencheckout
     When ich `gii mcp --repo-dir .gii-data` starte
     Then kann ein MCP-Client `law_text` fuer BGB zum Stichtag aufrufen
+    And `norm_text` liefert token-sparsam nur eine einzelne Norm wie § 280 BGB
     And `list_laws` und `search_laws` finden das BGB in den lokalen Metadaten
 
   Scenario: MCP-Read-Tools aktualisieren nicht implizit

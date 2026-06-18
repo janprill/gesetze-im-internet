@@ -13,6 +13,9 @@ type Law struct {
 	// Title is the title from data/toc.xml when available.
 	Title string
 
+	// Norm is the selected individual norm, e.g. "§ 280" or "280". Empty means the full law text.
+	Norm string
+
 	// Date is the requested effective/as-of date.
 	Date time.Time
 

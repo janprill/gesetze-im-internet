@@ -1,6 +1,6 @@
 // Package gii provides stichtagsbezogenen Zugriff auf die XML-Daten des
-// Gesetze-im-Internet data-Branches, rendert Gesetze als Plaintext und bietet
-// lokale Discovery-Methoden für Listen- und Suchabfragen.
+// Gesetze-im-Internet data-Branches, rendert ganze Gesetze oder einzelne Normen
+// als Plaintext und bietet lokale Discovery-Methoden für Listen- und Suchabfragen.
 //
 // Der Client verwaltet einen lokalen Git-Cache oder ein explizites RepositoryDir,
 // aktualisiert ihn per fetch und wählt den neuesten data-Branch-Commit am oder

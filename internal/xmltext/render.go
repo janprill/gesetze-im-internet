@@ -2,11 +2,14 @@ package xmltext
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
 )
+
+var ErrNormNotFound = errors.New("norm not found")
 
 type Document struct {
 	Path string
@@ -38,6 +41,18 @@ type inner struct {
 }
 
 func RenderLaw(title string, documents []Document) (string, error) {
+	return renderLaw(title, documents, "")
+}
+
+func RenderLawNorm(title string, documents []Document, selector string) (string, error) {
+	selector = strings.TrimSpace(selector)
+	if selector == "" {
+		return RenderLaw(title, documents)
+	}
+	return renderLaw("", documents, selector)
+}
+
+func renderLaw(title string, documents []Document, selector string) (string, error) {
 	sort.SliceStable(documents, func(i, j int) bool { return documents[i].Path < documents[j].Path })
 	var b strings.Builder
 	if strings.TrimSpace(title) != "" {
@@ -45,7 +60,7 @@ func RenderLaw(title string, documents []Document) (string, error) {
 		b.WriteString("\n\n")
 	}
 	for _, document := range documents {
-		parts, err := renderDocument(document.XML)
+		parts, err := renderDocument(document.XML, selector)
 		if err != nil {
 			return "", fmt.Errorf("render %s: %w", document.Path, err)
 		}
@@ -59,10 +74,14 @@ func RenderLaw(title string, documents []Document) (string, error) {
 			b.WriteString(part)
 		}
 	}
-	return strings.TrimSpace(b.String()) + "\n", nil
+	text := strings.TrimSpace(b.String())
+	if text == "" && strings.TrimSpace(selector) != "" {
+		return "", fmt.Errorf("%w: %q", ErrNormNotFound, selector)
+	}
+	return text + "\n", nil
 }
 
-func renderDocument(contents string) ([]string, error) {
+func renderDocument(contents string, selector string) ([]string, error) {
 	decoder := xml.NewDecoder(strings.NewReader(contents))
 	decoder.Strict = false
 	decoder.Entity = xml.HTMLEntity
@@ -83,6 +102,9 @@ func renderDocument(contents string) ([]string, error) {
 		if err := decoder.DecodeElement(&n, &start); err != nil {
 			return nil, err
 		}
+		if strings.TrimSpace(selector) != "" && !normMatches(n, selector) {
+			continue
+		}
 		text := renderNorm(n)
 		if text != "" {
 			rendered = append(rendered, text)
@@ -92,16 +114,7 @@ func renderDocument(contents string) ([]string, error) {
 
 func renderNorm(n norm) string {
 	var lines []string
-	heading := strings.TrimSpace(strings.Join(nonEmpty(
-		n.Metadata.Unit.Bez,
-		n.Metadata.Unit.Title,
-	), " "))
-	if heading == "" {
-		heading = strings.TrimSpace(strings.Join(nonEmpty(
-			n.Metadata.EnBez,
-			fragmentText(n.Metadata.Title.XML),
-		), " "))
-	}
+	heading := normHeading(n)
 	if heading != "" {
 		lines = append(lines, heading)
 	}
@@ -115,6 +128,52 @@ func renderNorm(n norm) string {
 		lines = append(lines, splitParagraphs(footnotes)...)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func normHeading(n norm) string {
+	heading := strings.TrimSpace(strings.Join(nonEmpty(
+		n.Metadata.Unit.Bez,
+		n.Metadata.Unit.Title,
+	), " "))
+	if heading == "" {
+		heading = strings.TrimSpace(strings.Join(nonEmpty(
+			n.Metadata.EnBez,
+			fragmentText(n.Metadata.Title.XML),
+		), " "))
+	}
+	return heading
+}
+
+func normMatches(n norm, selector string) bool {
+	wantedID := normalizeNormID(selector)
+	for _, candidate := range []string{n.Metadata.EnBez, n.Metadata.Unit.Bez} {
+		if id := normalizeNormID(candidate); id != "" && id == wantedID {
+			return true
+		}
+	}
+	return normalizeNormText(normHeading(n)) == normalizeNormText(selector)
+}
+
+func normalizeNormID(value string) string {
+	value = strings.ToLower(strings.TrimSpace(value))
+	value = strings.NewReplacer(
+		"§", "",
+		"paragraph", "",
+		"paragraf", "",
+		"artikel", "",
+		"art.", "",
+		"art", "",
+		" ", "",
+		"\u00a0", "",
+		".", "",
+		"-", "",
+	).Replace(value)
+	return value
+}
+
+func normalizeNormText(value string) string {
+	value = strings.ToLower(strings.TrimSpace(value))
+	return strings.Join(strings.Fields(value), " ")
 }
 
 func fragmentText(fragment string) string {

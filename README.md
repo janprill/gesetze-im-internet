@@ -151,9 +151,11 @@ client := gii.New(gii.Options{
 Wichtige Methoden:
 
 - `client.Update(ctx)` klont oder aktualisiert den lokalen Daten-Checkout.
-- `client.LawText(ctx, query, date)` aktualisiert den Checkout und gibt den Wortlaut zum Stichtag zurück.
+- `client.LawText(ctx, query, date)` aktualisiert den Checkout und gibt den vollständigen Wortlaut zum Stichtag zurück.
+- `client.LawNormText(ctx, query, norm, date)` aktualisiert den Checkout und gibt nur eine einzelne Norm zurück, z. B. `query="BGB"`, `norm="280"`.
 - `client.LawTextToday(ctx, query)` nutzt das heutige Datum.
 - `client.LawTextWithoutUpdate(ctx, query, date)` arbeitet offline mit einem bereits vorhandenen Checkout.
+- `client.LawNormTextWithoutUpdate(ctx, query, norm, date)` arbeitet offline und gibt token-sparsam nur eine einzelne Norm zurück.
 - `client.ListLawsWithoutUpdate(ctx, date, limit, offset)` listet Gesetze/Rechtsverordnungen offline aus `data/toc.xml`.
 - `client.SearchLawsWithoutUpdate(ctx, query, date, limit, offset)` sucht offline nach ID, Titel oder exakter XML-Abkürzung.
 
@@ -175,6 +177,7 @@ Der Rückgabewert `*gii.Law` enthält u. a.:
 Typed Errors:
 
 - `gii.ErrLawNotFound`, wenn kein passendes Gesetz gefunden wurde.
+- `gii.ErrNormNotFound`, wenn das Gesetz gefunden wurde, aber die angefragte Einzelnorm nicht existiert.
 - `gii.ErrRevisionNotFound`, wenn der Datenbranch für den Stichtag noch keinen Commit enthält.
 - `gii.ErrLocalCacheMissing`, wenn ein Offline-Aufruf ohne vorhandenen lokalen Checkout ausgeführt wird.
 
@@ -259,7 +262,8 @@ gii mcp --transport sse --addr 127.0.0.1:8080 --repo-dir ./.gii-data
 
 Verfügbare MCP-Tools:
 
-- `law_text`: Plaintext eines Gesetzes zum Stichtag; Eingaben: `query`, optional `date` (`YYYY-MM-DD`). Ausgabe: Plaintext plus strukturierte JSON-Metadaten (`id`, `title`, `date`, `revision`, `xml_files`, `text`).
+- `law_text`: Plaintext eines ganzen Gesetzes zum Stichtag; Eingaben: `query`, optional `date` (`YYYY-MM-DD`). Optional kann `norm` gesetzt werden, dann wird nur diese Einzelnorm geliefert. Ausgabe: Plaintext plus strukturierte JSON-Metadaten (`id`, `title`, `norm`, `date`, `revision`, `xml_files`, `text`).
+- `norm_text`: token-sparsamer Abruf einer einzelnen Norm; Eingaben: `query`, `norm` (z. B. `280` oder `§ 280`), optional `date`.
 - `list_laws`: paginierte Discovery aus dem lokalen Checkout; Eingaben: optional `date`, `limit`, `offset`.
 - `search_laws`: Suche nach ID, Titel oder exakter XML-Abkürzung; Eingaben: `query`, optional `date`, `limit`, `offset`.
 - `update_cache`: explizites Update des lokalen Checkouts. Für regelmäßige Aktualisierung ist ein Cronjob meist besser:

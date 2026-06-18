@@ -76,6 +76,64 @@ func TestBDD_UnbekanntesGesetzLiefertTypedError(t *testing.T) {
 	}
 }
 
+func TestBDD_EinzelnormWirdTokenSparsamGerendert(t *testing.T) {
+	source := newDataBranchXMLFixture(t, xmlVersion{date: "2024-01-01", xml: `<norm><metadaten><jurabk>BGB</jurabk><enbez>§ 280</enbez><titel>Schadensersatz wegen Pflichtverletzung</titel></metadaten><textdaten><text><Content><P>Nur § 280.</P></Content></text><fussnoten/></textdaten></norm><norm><metadaten><jurabk>BGB</jurabk><enbez>§ 281</enbez><titel>Folgenorm</titel></metadaten><textdaten><text><Content><P>Nicht angeforderte Norm.</P></Content></text><fussnoten/></textdaten></norm>`})
+	client := gii.New(gii.Options{RepositoryURL: source, CacheDir: t.TempDir()})
+
+	law, err := client.LawNormText(context.Background(), "BGB", "280", mustDate(t, "2024-01-15"))
+	if err != nil {
+		t.Fatalf("LawNormText() error = %v", err)
+	}
+	if law.Norm != "280" || !strings.Contains(law.Text, "§ 280 Schadensersatz wegen Pflichtverletzung") || !strings.Contains(law.Text, "Nur § 280.") {
+		t.Fatalf("expected § 280 text, got %#v\n%s", law, law.Text)
+	}
+	if strings.Contains(law.Text, "§ 281") || strings.Contains(law.Text, "Nicht angeforderte Norm") || strings.Contains(law.Text, "Bürgerliches Gesetzbuch") {
+		t.Fatalf("expected token-sparse single norm text, got:\n%s", law.Text)
+	}
+
+	_, err = client.LawNormTextWithoutUpdate(context.Background(), "BGB", "999", mustDate(t, "2024-01-15"))
+	if !errors.Is(err, gii.ErrNormNotFound) {
+		t.Fatalf("expected ErrNormNotFound, got %v", err)
+	}
+}
+
+func TestBDD_MCPNormTextLiefertNurEinzelnorm(t *testing.T) {
+	source := newDataBranchXMLFixture(t, xmlVersion{date: "2024-01-01", xml: `<norm><metadaten><jurabk>BGB</jurabk><enbez>§ 280</enbez><titel>Schadensersatz wegen Pflichtverletzung</titel></metadaten><textdaten><text><Content><P>MCP nur § 280.</P></Content></text><fussnoten/></textdaten></norm><norm><metadaten><jurabk>BGB</jurabk><enbez>§ 281</enbez><titel>Folgenorm</titel></metadaten><textdaten><text><Content><P>MCP nicht § 281.</P></Content></text><fussnoten/></textdaten></norm>`})
+	repoDir := filepath.Join(t.TempDir(), ".gii-data")
+	client := gii.New(gii.Options{RepositoryURL: source, RepositoryDir: repoDir})
+	if err := client.Update(context.Background()); err != nil {
+		t.Fatalf("Update() error = %v", err)
+	}
+	session, cleanup := newMCPSession(t, client)
+	defer cleanup()
+
+	result, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "norm_text",
+		Arguments: map[string]any{"query": "BGB", "norm": "280", "date": "2024-01-15"},
+	})
+	if err != nil {
+		t.Fatalf("norm_text CallTool error = %v", err)
+	}
+	text := toolText(result)
+	if result.IsError || !strings.Contains(text, "§ 280 Schadensersatz wegen Pflichtverletzung") || !strings.Contains(text, "MCP nur § 280.") {
+		t.Fatalf("expected § 280 result, got %#v text=%q", result, text)
+	}
+	if strings.Contains(text, "§ 281") || strings.Contains(text, "MCP nicht § 281") {
+		t.Fatalf("norm_text should not return following norm, got:\n%s", text)
+	}
+
+	viaLawText, err := session.CallTool(context.Background(), &mcpsdk.CallToolParams{
+		Name:      "law_text",
+		Arguments: map[string]any{"query": "BGB", "norm": "§ 280", "date": "2024-01-15"},
+	})
+	if err != nil {
+		t.Fatalf("law_text with norm CallTool error = %v", err)
+	}
+	if viaLawText.IsError || !strings.Contains(toolText(viaLawText), "MCP nur § 280.") || strings.Contains(toolText(viaLawText), "MCP nicht § 281") {
+		t.Fatalf("law_text optional norm should return only § 280, got %#v text=%q", viaLawText, toolText(viaLawText))
+	}
+}
+
 func TestBDD_CLIAktualisiertCacheUndGibtWortlautAus(t *testing.T) {
 	// Given ein leerer lokaler Cache.
 	source := newDataBranchFixture(t,
@@ -313,12 +371,30 @@ type version struct {
 	paragraph string
 }
 
+type xmlVersion struct {
+	date string
+	xml  string
+}
+
 func newDataBranchFixture(t *testing.T, versions ...version) string {
 	t.Helper()
 	repo := filepath.Join(t.TempDir(), "source")
 	runGit(t, "", nil, "init", "--initial-branch=data", repo)
 	for _, v := range versions {
 		writeFixtureData(t, repo, v.paragraph)
+		runGitWithDate(t, repo, v.date, "add", "data", "README.md")
+		runGitWithDate(t, repo, v.date, "commit", "-m", "scrape "+v.date)
+		runGitWithDate(t, repo, v.date, "tag", v.date)
+	}
+	return repo
+}
+
+func newDataBranchXMLFixture(t *testing.T, versions ...xmlVersion) string {
+	t.Helper()
+	repo := filepath.Join(t.TempDir(), "source")
+	runGit(t, "", nil, "init", "--initial-branch=data", repo)
+	for _, v := range versions {
+		writeFixtureXMLData(t, repo, v.xml)
 		runGitWithDate(t, repo, v.date, "add", "data", "README.md")
 		runGitWithDate(t, repo, v.date, "commit", "-m", "scrape "+v.date)
 		runGitWithDate(t, repo, v.date, "tag", v.date)
@@ -337,8 +413,21 @@ func writeFixtureData(t *testing.T, repo, paragraph string) {
   </item>
 </items>
 `)
-	mustWrite(t, filepath.Join(repo, "data", "items", "bgb", "BJNR001950896.xml"), `<norm builddate="20240101000000" doknr="BJNR001950896BJNE000102377"><metadaten><jurabk>BGB</jurabk><enbez>§ 1</enbez><titel format="parat">Beginn der Rechtsfähigkeit</titel></metadaten><textdaten><text format="XML"><Content><P>`+paragraph+`</P></Content></text><fussnoten/></textdaten></norm>
+	writeFixtureXMLData(t, repo, `<norm builddate="20240101000000" doknr="BJNR001950896BJNE000102377"><metadaten><jurabk>BGB</jurabk><enbez>§ 1</enbez><titel format="parat">Beginn der Rechtsfähigkeit</titel></metadaten><textdaten><text format="XML"><Content><P>`+paragraph+`</P></Content></text><fussnoten/></textdaten></norm>`)
+}
+
+func writeFixtureXMLData(t *testing.T, repo, xml string) {
+	t.Helper()
+	mustWrite(t, filepath.Join(repo, "README.md"), "fixture\n")
+	mustWrite(t, filepath.Join(repo, "data", "toc.xml"), `<?xml version="1.0" encoding="UTF-8" ?>
+<items>
+  <item>
+    <title>Bürgerliches Gesetzbuch</title>
+    <link>http://www.gesetze-im-internet.de/bgb/xml.zip</link>
+  </item>
+</items>
 `)
+	mustWrite(t, filepath.Join(repo, "data", "items", "bgb", "BJNR001950896.xml"), xml+"\n")
 }
 
 func newMCPSession(t *testing.T, client *gii.Client) (*mcpsdk.ClientSession, func()) {

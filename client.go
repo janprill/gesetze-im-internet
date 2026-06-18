@@ -2,10 +2,14 @@ package gii
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/janprill/gii/internal/errs"
 	"github.com/janprill/gii/internal/gitrepo"
 	"github.com/janprill/gii/internal/xmltext"
 )
@@ -75,13 +79,25 @@ func (c *Client) Update(ctx context.Context) error {
 // LawText updates the local cache and returns the wording of query as of date.
 // A zero date means today according to the configured Clock.
 func (c *Client) LawText(ctx context.Context, query string, date time.Time) (*Law, error) {
-	return c.lawText(ctx, query, date, true)
+	return c.lawText(ctx, query, "", date, true)
+}
+
+// LawNormText updates the local cache and returns one individual norm of query as of date.
+// A zero date means today according to the configured Clock.
+func (c *Client) LawNormText(ctx context.Context, query, norm string, date time.Time) (*Law, error) {
+	return c.lawText(ctx, query, norm, date, true)
 }
 
 // LawTextWithoutUpdate returns the wording from the local cache without fetching first.
 // It is useful for offline use after Update was called explicitly.
 func (c *Client) LawTextWithoutUpdate(ctx context.Context, query string, date time.Time) (*Law, error) {
-	return c.lawText(ctx, query, date, false)
+	return c.lawText(ctx, query, "", date, false)
+}
+
+// LawNormTextWithoutUpdate returns one individual norm from the local cache without fetching first.
+// It is useful for token-sparse MCP and offline use after Update was called explicitly.
+func (c *Client) LawNormTextWithoutUpdate(ctx context.Context, query, norm string, date time.Time) (*Law, error) {
+	return c.lawText(ctx, query, norm, date, false)
 }
 
 // LawTextToday updates the local cache and returns the wording of query as of today.
@@ -89,7 +105,7 @@ func (c *Client) LawTextToday(ctx context.Context, query string) (*Law, error) {
 	return c.LawText(ctx, query, c.today())
 }
 
-func (c *Client) lawText(ctx context.Context, query string, date time.Time, update bool) (*Law, error) {
+func (c *Client) lawText(ctx context.Context, query, norm string, date time.Time, update bool) (*Law, error) {
 	if date.IsZero() {
 		date = c.today()
 	}
@@ -114,14 +130,23 @@ func (c *Client) lawText(ctx context.Context, query string, date time.Time, upda
 		}
 		rendered = append(rendered, xmltext.Document{Path: file, XML: contents})
 	}
-	text, err := xmltext.RenderLaw(match.Title, rendered)
+	var text string
+	if strings.TrimSpace(norm) == "" {
+		text, err = xmltext.RenderLaw(match.Title, rendered)
+	} else {
+		text, err = xmltext.RenderLawNorm(match.Title, rendered, norm)
+	}
 	if err != nil {
+		if errors.Is(err, xmltext.ErrNormNotFound) {
+			return nil, fmt.Errorf("%w: %s %s", errs.NormNotFound, query, norm)
+		}
 		return nil, err
 	}
 	return &Law{
 		Query:    query,
 		ID:       match.ID,
 		Title:    match.Title,
+		Norm:     strings.TrimSpace(norm),
 		Date:     date,
 		Revision: rev,
 		XMLFiles: append([]string(nil), match.XMLFiles...),
