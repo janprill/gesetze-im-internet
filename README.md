@@ -260,13 +260,15 @@ Für ältere MCP-Clients kann der SSE-Transport verwendet werden:
 gii mcp --transport sse --addr 127.0.0.1:8080 --repo-dir ./.gii-data
 ```
 
+Der Server liefert beim MCP-Handshake außerdem `instructions` mit einer LLM-orientierten Kurzanleitung und stellt den Prompt `gii_usage` bereit. MCP-Clients, die diese Metadaten an das Modell weiterreichen, können die Tools dadurch ohne separates Manual sinnvoll auswählen.
+
 Verfügbare MCP-Tools:
 
 - `law_text`: Plaintext eines ganzen Gesetzes zum Stichtag; Eingaben: `query`, optional `date` (`YYYY-MM-DD`). Optional kann `norm` gesetzt werden, dann wird nur diese Einzelnorm geliefert. Ausgabe: Plaintext plus strukturierte JSON-Metadaten (`id`, `title`, `norm`, `date`, `revision`, `xml_files`, `text`).
-- `norm_text`: token-sparsamer Abruf einer einzelnen Norm; Eingaben: `query`, `norm` (z. B. `280` oder `§ 280`), optional `date`.
+- `norm_text`: token-sparsamer Abruf einer einzelnen Norm; Eingaben: `query`, `norm` (z. B. `280` oder `§ 280`), optional `date`. Für Fragen nach einzelnen Paragraphen/Artikeln bevorzugen.
 - `list_laws`: paginierte Discovery aus dem lokalen Checkout; Eingaben: optional `date`, `limit`, `offset`.
-- `search_laws`: Suche nach ID, Titel oder exakter XML-Abkürzung; Eingaben: `query`, optional `date`, `limit`, `offset`.
-- `update_cache`: explizites Update des lokalen Checkouts. Für regelmäßige Aktualisierung ist ein Cronjob meist besser:
+- `search_laws`: Suche nach ID, Titel oder exakter XML-Abkürzung; Eingaben: `query`, optional `date`, `limit`, `offset`. Verwenden, wenn die richtige Abkürzung/ID unklar ist.
+- `update_cache`: explizites Update des lokalen Checkouts, z. B. nach `local_cache_missing`. Für regelmäßige Aktualisierung ist ein Cronjob meist besser:
 
 ```cron
 # täglich um 04:30 Uhr den lokalen gii-Datencheckout aktualisieren

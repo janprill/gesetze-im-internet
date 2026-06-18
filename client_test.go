@@ -134,6 +134,59 @@ func TestBDD_MCPNormTextLiefertNurEinzelnorm(t *testing.T) {
 	}
 }
 
+func TestBDD_MCPLiefertNutzungshinweiseFuerLLMs(t *testing.T) {
+	client := gii.New(gii.Options{RepositoryDir: t.TempDir()})
+	session, cleanup := newMCPSession(t, client)
+	defer cleanup()
+
+	instructions := session.InitializeResult().Instructions
+	if !strings.Contains(instructions, "norm_text bevorzugen") || !strings.Contains(instructions, "local_cache_missing") {
+		t.Fatalf("MCP instructions should explain efficient tool usage and cache handling, got:\n%s", instructions)
+	}
+
+	tools, err := session.ListTools(context.Background(), nil)
+	if err != nil {
+		t.Fatalf("ListTools() error = %v", err)
+	}
+	var normTextDescription string
+	for _, tool := range tools.Tools {
+		if tool.Name == "norm_text" {
+			normTextDescription = tool.Description
+			break
+		}
+	}
+	if !strings.Contains(normTextDescription, "Token-sparsamer") || !strings.Contains(normTextDescription, "query=BGB") {
+		t.Fatalf("norm_text description should guide LLM usage, got %q", normTextDescription)
+	}
+
+	prompts, err := session.ListPrompts(context.Background(), nil)
+	if err != nil {
+		t.Fatalf("ListPrompts() error = %v", err)
+	}
+	foundUsagePrompt := false
+	for _, prompt := range prompts.Prompts {
+		if prompt.Name == "gii_usage" {
+			foundUsagePrompt = true
+			break
+		}
+	}
+	if !foundUsagePrompt {
+		t.Fatalf("expected gii_usage prompt in %#v", prompts.Prompts)
+	}
+
+	usage, err := session.GetPrompt(context.Background(), &mcpsdk.GetPromptParams{Name: "gii_usage"})
+	if err != nil {
+		t.Fatalf("GetPrompt(gii_usage) error = %v", err)
+	}
+	if len(usage.Messages) != 1 {
+		t.Fatalf("expected one usage prompt message, got %#v", usage.Messages)
+	}
+	text, ok := usage.Messages[0].Content.(*mcpsdk.TextContent)
+	if !ok || !strings.Contains(text.Text, "search_laws") || !strings.Contains(text.Text, "YYYY-MM-DD") {
+		t.Fatalf("usage prompt should explain search and date format, got %#v", usage.Messages[0].Content)
+	}
+}
+
 func TestBDD_CLIAktualisiertCacheUndGibtWortlautAus(t *testing.T) {
 	// Given ein leerer lokaler Cache.
 	source := newDataBranchFixture(t,

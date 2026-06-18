@@ -24,6 +24,17 @@ const (
 	maxDiscoveryLimit     = 200
 )
 
+const serverInstructions = `gii stellt deutsche Gesetze/Rechtsverordnungen aus dem lokalen Gesetze-im-Internet-Datencheckout bereit.
+
+Nutzung für LLMs:
+- Für eine einzelne Vorschrift immer norm_text bevorzugen (token-sparsam), z.B. query="BGB", norm="280".
+- Für einen vollständigen Gesetzestext law_text verwenden; law_text kann mit norm ebenfalls eine Einzelnorm liefern.
+- Wenn die richtige Abkürzung/ID unklar ist, zuerst search_laws verwenden; für Browsing list_laws mit limit/offset nutzen.
+- date ist optional und hat immer das Format YYYY-MM-DD. Ohne date wird das vom Server konfigurierte heutige Datum verwendet.
+- Read-Tools arbeiten offline und führen kein implizites git fetch aus. Bei local_cache_missing update_cache aufrufen oder den Checkout extern per gii update aktualisieren.
+- Ergebnisse enthalten Plaintext sowie strukturierte Metadaten wie id, title, date, revision und xml_files. Die revision für reproduzierbare Antworten zitieren/protokollieren.
+- Der Stichtag bezieht sich auf Archivierungs-Commits im data-Branch, nicht zwingend auf das juristische Inkrafttreten einzelner Änderungen.`
+
 // New returns an MCP server exposing gii tools. Read tools use only the local checkout;
 // call gii update or the update_cache tool explicitly to refresh data.
 func New(client *gii.Client) *mcp.Server {
@@ -31,38 +42,61 @@ func New(client *gii.Client) *mcp.Server {
 		panic("nil gii client")
 	}
 	tools := &toolset{client: client}
-	server := mcp.NewServer(&mcp.Implementation{Name: Name, Version: Version}, nil)
+	server := mcp.NewServer(&mcp.Implementation{Name: Name, Version: Version}, &mcp.ServerOptions{Instructions: serverInstructions})
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "law_text",
-		Title:       "Gesetzestext abrufen",
-		Description: "Ruft den Plaintext eines ganzen Gesetzes oder optional einer einzelnen Norm zum Stichtag aus dem lokalen gii-Datencheckout ab. Führt kein implizites Update aus.",
+		Name:  "law_text",
+		Title: "Gesetzestext abrufen",
+		Description: "Ruft den Plaintext eines ganzen Gesetzes aus dem lokalen gii-Datencheckout ab; optional mit norm nur eine einzelne Vorschrift. " +
+			"Eingaben: query = Gesetze-im-Internet-ID, amtliche Abkürzung oder Titel (z.B. BGB); date optional im Format YYYY-MM-DD; norm optional (z.B. 280 oder § 280). " +
+			"Für einzelne Vorschriften nach Möglichkeit norm_text bevorzugen. Führt kein implizites Update/fetch aus.",
 		Annotations: readOnlyAnnotations("Gesetzestext abrufen"),
 	}, tools.lawText)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "norm_text",
-		Title:       "Einzelnorm abrufen",
-		Description: "Ruft token-sparsam nur eine einzelne Norm eines Gesetzes ab, z.B. query=BGB und norm=280 oder § 280. Führt kein implizites Update aus.",
+		Name:  "norm_text",
+		Title: "Einzelnorm abrufen",
+		Description: "Token-sparsamer Abruf genau einer einzelnen Norm eines Gesetzes aus dem lokalen gii-Datencheckout. " +
+			"Verwenden, wenn eine Frage nach einem Paragraphen/Artikel gestellt wird, z.B. query=BGB und norm=280 oder § 280. " +
+			"date ist optional im Format YYYY-MM-DD. Führt kein implizites Update/fetch aus.",
 		Annotations: readOnlyAnnotations("Einzelnorm abrufen"),
 	}, tools.normText)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "list_laws",
-		Title:       "Gesetze listen",
-		Description: "Listet verfügbare Gesetze/Rechtsverordnungen aus dem lokalen gii-Datencheckout zum Stichtag. Führt kein implizites Update aus.",
+		Name:  "list_laws",
+		Title: "Gesetze listen",
+		Description: "Listet verfügbare Gesetze/Rechtsverordnungen aus dem lokalen gii-Datencheckout zum Stichtag. " +
+			"Für Browsing/Pagination verwenden; Eingaben: date optional YYYY-MM-DD, limit default 50/max 200, offset nullbasiert. Führt kein implizites Update/fetch aus.",
 		Annotations: readOnlyAnnotations("Gesetze listen"),
 	}, tools.listLaws)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "search_laws",
-		Title:       "Gesetze suchen",
-		Description: "Sucht Gesetze/Rechtsverordnungen nach ID, Titel oder exakter XML-Abkürzung im lokalen gii-Datencheckout. Führt kein implizites Update aus.",
+		Name:  "search_laws",
+		Title: "Gesetze suchen",
+		Description: "Sucht Gesetze/Rechtsverordnungen nach ID, Titel oder exakter XML-Abkürzung im lokalen gii-Datencheckout. " +
+			"Verwenden, wenn query für law_text/norm_text unklar ist, z.B. Suche nach Bürgerliches Gesetzbuch, BGB oder bgb. " +
+			"Eingaben: query, optional date YYYY-MM-DD, limit default 50/max 200, offset. Führt kein implizites Update/fetch aus.",
 		Annotations: readOnlyAnnotations("Gesetze suchen"),
 	}, tools.searchLaws)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "update_cache",
-		Title:       "gii-Datencheckout aktualisieren",
-		Description: "Aktualisiert den konfigurierten lokalen gii-Datencheckout explizit per git clone/fetch. Für Automatisierung wird gii update per Cron empfohlen.",
+		Name:  "update_cache",
+		Title: "gii-Datencheckout aktualisieren",
+		Description: "Aktualisiert den konfigurierten lokalen gii-Datencheckout explizit per git clone/fetch. " +
+			"Aufrufen, wenn Read-Tools local_cache_missing melden oder bewusst ein frischer Datenstand benötigt wird. Für regelmäßige Automatisierung wird gii update per Cron empfohlen.",
 		Annotations: updateAnnotations("gii-Datencheckout aktualisieren"),
 	}, tools.updateCache)
+	server.AddPrompt(&mcp.Prompt{
+		Name:        "gii_usage",
+		Title:       "gii MCP Nutzungshilfe",
+		Description: "Kurzanleitung für LLMs zur effizienten Nutzung der gii-MCP-Tools.",
+	}, giiUsagePrompt)
 	return server
+}
+
+func giiUsagePrompt(context.Context, *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	return &mcp.GetPromptResult{
+		Description: "Kurzanleitung für die gii-MCP-Tools",
+		Messages: []*mcp.PromptMessage{{
+			Role:    "user",
+			Content: &mcp.TextContent{Text: serverInstructions},
+		}},
+	}, nil
 }
 
 // ServeStdio serves one MCP session over stdin/stdout.
