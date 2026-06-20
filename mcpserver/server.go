@@ -3,26 +3,50 @@ package mcpserver
 
 import (
 	"context"
+	"crypto/subtle"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/janprill/gii"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const (
+var (
 	// Name is the MCP server implementation name.
 	Name = "gii"
 
-	// Version is the MCP server implementation version. Releases may override this at build time later.
+	// Version is the MCP server implementation version.
+	// Override at build time: go build -ldflags "-X github.com/janprill/gii/mcpserver.Version=1.0.0" .
 	Version = "dev"
+)
 
+const (
 	defaultDiscoveryLimit = 50
 	maxDiscoveryLimit     = 200
+
+	// defaultRateLimitPerMin is the default rate limit (requests per minute per IP) for HTTP transports.
+	// A value of 0 disables rate limiting.
+	defaultRateLimitPerMin = 120
 )
+
+// HTTPOptions configures security for HTTP-based MCP transports.
+type HTTPOptions struct {
+	// AuthToken, when non-empty, requires an Authorization: Bearer <token>
+	// header on every HTTP request. Requests without a matching token receive 401.
+	AuthToken string
+
+	// AllowRemoteHost permits binding to non-loopback addresses (e.g. 0.0.0.0).
+	// By default ServeStreamableHTTP and ServeSSE reject non-loopback bind addresses.
+	AllowRemoteHost bool
+
+	// RateLimitPerMin limits requests per client IP per minute. 0 = unlimited.
+	RateLimitPerMin int
+}
 
 const serverInstructions = `gii stellt deutsche Gesetze/Rechtsverordnungen aus dem lokalen Gesetze-im-Internet-Datencheckout bereit.
 
@@ -105,21 +129,138 @@ func ServeStdio(ctx context.Context, server *mcp.Server) error {
 }
 
 // ServeStreamableHTTP serves MCP over Streamable HTTP at addr.
-func ServeStreamableHTTP(ctx context.Context, server *mcp.Server, addr string) error {
-	if strings.TrimSpace(addr) == "" {
-		return fmt.Errorf("addr must not be empty")
+// When opts.AllowRemoteHost is false (the default) addr must resolve to a loopback
+// address; non-loopback addresses are rejected to prevent accidental exposure.
+// When opts.AuthToken is set, every request must include a matching
+// Authorization: Bearer <token> header.
+func ServeStreamableHTTP(ctx context.Context, server *mcp.Server, addr string, opts HTTPOptions) error {
+	if err := validateBindAddr(addr, opts.AllowRemoteHost); err != nil {
+		return err
 	}
 	handler := mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server { return server }, &mcp.StreamableHTTPOptions{Stateless: true})
-	return serveHTTP(ctx, addr, handler)
+	return serveHTTP(ctx, addr, secureHandler(handler, opts))
 }
 
 // ServeSSE serves MCP over the legacy HTTP/SSE transport at addr.
-func ServeSSE(ctx context.Context, server *mcp.Server, addr string) error {
+// Security is enforced the same way as ServeStreamableHTTP.
+func ServeSSE(ctx context.Context, server *mcp.Server, addr string, opts HTTPOptions) error {
+	if err := validateBindAddr(addr, opts.AllowRemoteHost); err != nil {
+		return err
+	}
+	handler := mcp.NewSSEHandler(func(*http.Request) *mcp.Server { return server }, nil)
+	return serveHTTP(ctx, addr, secureHandler(handler, opts))
+}
+
+// validateBindAddr ensures addr is loopback unless explicitly allowed.
+func validateBindAddr(addr string, allowRemote bool) error {
 	if strings.TrimSpace(addr) == "" {
 		return fmt.Errorf("addr must not be empty")
 	}
-	handler := mcp.NewSSEHandler(func(*http.Request) *mcp.Server { return server }, nil)
-	return serveHTTP(ctx, addr, handler)
+	if allowRemote {
+		return nil
+	}
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		return fmt.Errorf("invalid addr %q: %w", addr, err)
+	}
+	// Resolve and check every returned IP.
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		// If resolution fails, fall back to literal parse.
+		ips = []net.IP{net.ParseIP(host)}
+	}
+	for _, ip := range ips {
+		if !ip.IsLoopback() {
+			return fmt.Errorf("refusing to bind to non-loopback address %s; pass --allow-remote to override", host)
+		}
+	}
+	return nil
+}
+
+// secureHandler wraps h with auth and rate-limiting middleware based on opts.
+func secureHandler(h http.Handler, opts HTTPOptions) http.Handler {
+	var handler http.Handler = h
+	if opts.AuthToken != "" {
+		handler = authMiddleware(opts.AuthToken, handler)
+	}
+	if opts.RateLimitPerMin > 0 {
+		handler = rateLimitMiddleware(opts.RateLimitPerMin, handler)
+	}
+	return handler
+}
+
+// authMiddleware rejects requests whose Authorization header does not match the expected bearer token.
+func authMiddleware(token string, next http.Handler) http.Handler {
+	expected := "Bearer " + token
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		auth := r.Header.Get("Authorization")
+		if auth == "" {
+			http.Error(w, "missing Authorization header", http.StatusUnauthorized)
+			return
+		}
+		if subtle.ConstantTimeCompare([]byte(auth), []byte(expected)) != 1 {
+			http.Error(w, "invalid auth token", http.StatusUnauthorized)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// rateLimitMiddleware enforces a per-IP request budget using a simple token bucket.
+// The bucket refills continuously at RateLimitPerMin / 60 tokens per second
+// with a burst capacity equal to the per-minute limit.
+func rateLimitMiddleware(perMin int, next http.Handler) http.Handler {
+	var (
+		mu      sync.Mutex
+		buckets = make(map[string]*bucket)
+	)
+	refill := float64(perMin) / 60.0 // tokens per second
+	burst := float64(perMin)
+	// Clean up stale buckets every 5 minutes.
+	go func() {
+		for range time.Tick(5 * time.Minute) {
+			mu.Lock()
+			cutoff := time.Now().Add(-10 * time.Minute)
+			for ip, b := range buckets {
+				if b.lastSeen.Before(cutoff) {
+					delete(buckets, ip)
+				}
+			}
+			mu.Unlock()
+		}
+	}()
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip, _, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			ip = r.RemoteAddr
+		}
+		mu.Lock()
+		b, ok := buckets[ip]
+		if !ok {
+			b = &bucket{tokens: burst, lastSeen: time.Now()}
+			buckets[ip] = b
+		}
+		now := time.Now()
+		elapsed := now.Sub(b.lastSeen).Seconds()
+		b.tokens += elapsed * refill
+		if b.tokens > burst {
+			b.tokens = burst
+		}
+		b.lastSeen = now
+		if b.tokens < 1 {
+			mu.Unlock()
+			http.Error(w, "rate limit exceeded", http.StatusTooManyRequests)
+			return
+		}
+		b.tokens--
+		mu.Unlock()
+		next.ServeHTTP(w, r)
+	})
+}
+
+type bucket struct {
+	tokens   float64
+	lastSeen time.Time
 }
 
 type toolset struct {
@@ -275,7 +416,7 @@ func parseToolDate(value string) (time.Time, error) {
 	}
 	date, err := time.Parse("2006-01-02", value)
 	if err != nil {
-		return time.Time{}, toolError("invalid_date", "date must use YYYY-MM-DD", err)
+		return time.Time{}, toolError("invalid_date", fmt.Sprintf("date must use YYYY-MM-DD, got %q", value), err)
 	}
 	return date, nil
 }
@@ -368,7 +509,11 @@ func updateAnnotations(title string) *mcp.ToolAnnotations {
 }
 
 func serveHTTP(ctx context.Context, addr string, handler http.Handler) error {
-	srv := &http.Server{Addr: addr, Handler: handler}
+	srv := &http.Server{
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
 	errc := make(chan error, 1)
 	go func() {
 		err := srv.ListenAndServe()
