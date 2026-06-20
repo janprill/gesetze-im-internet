@@ -286,6 +286,24 @@ Wichtige Flags:
 - `--addr`: Listen-Adresse für `gii mcp --transport http|sse`; Standard ist `127.0.0.1:8080`.
 - `--no-update`: vorhandenen Checkout offline verwenden.
 
+### Pi-Extension (gii-mcp)
+
+Das Verzeichnis [`pi-extension/gii-mcp/`](./pi-extension/gii-mcp) enthält eine Extension für den [pi coding agent](https://github.com/earendil-works/pi-mono), die den `gii mcp`-Server (stdio) bridge. Beim `session_start` spawnt sie `gii mcp --transport stdio --repo-dir <…>`, macht den JSON-RPC-Handshake und registriert alle vom Server annoncierten Tools per `pi.registerTool()` (mit `gii_`-Präfix: `gii_law_text`, `gii_norm_text`, `gii_list_laws`, `gii_search_laws`, `gii_update_cache`). Aufrufe werden 1:1 als `tools/call` weitergereicht; `session_shutdown` beendet den Kindprozess.
+
+Installation als global auto-discovered Extension (Symlink, eine Quelle):
+
+```sh
+ln -s "$PWD/pi-extension/gii-mcp" ~/.pi/agent/extensions/gii-mcp
+```
+
+Config (Env):
+
+- `GII_BIN` — Pfad zum gii-Binary (Default: `~/go/bin/gii`).
+- `GII_MCP_REPO_DIR` — lokaler Daten-Checkout (Default: `~/age/gesetze-im-internet/.gii-data`).
+- `GII_MCP_ARGS` — zusätzliche Args, leerzeichengetrennt (selten nötig).
+
+Hinweis: `gii_law_text` liefert ganze Gesetze als Plaintext (BGB = sehr groß). Für Einzelfragen `gii_norm_text` verwenden; für Volltexte das Ergebnis über `ctx_index` ablegen und per `ctx_search` abfragen, damit die Bytes nicht den Kontext fluten.
+
 ### Verhalten und Grenzen
 
 - Der Stichtag bezieht sich auf Archivierungs-Commits im `data`-Branch, nicht zwingend auf das juristische Inkrafttreten einzelner Normänderungen.

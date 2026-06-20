@@ -6,3 +6,6 @@ sgb-rlm-varstore/.pytest_cache/
 sgb-rlm-varstore/**/__pycache__/
 sgb-rlm-varstore/varstore/
 sgb-rlm-varstore/**/*.sqlite
+
+# Lokaler gii-Datencheckout (MCP server)
+.gii-data/
