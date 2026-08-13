@@ -16,8 +16,18 @@ type Document struct {
 	XML  string
 }
 
+type StructuredNorm struct {
+	JurAbk    string
+	EnBez     string
+	Title     string
+	XMLPath   string
+	BuildDate string
+	Text      string
+}
+
 type norm struct {
-	Metadata struct {
+	BuildDate string `xml:"builddate,attr"`
+	Metadata  struct {
 		JurAbk string `xml:"jurabk"`
 		EnBez  string `xml:"enbez"`
 		Title  inner  `xml:"titel"`
@@ -38,6 +48,40 @@ type norm struct {
 
 type inner struct {
 	XML string `xml:",innerxml"`
+}
+
+func ExtractStructuredNorms(documents []Document) ([]StructuredNorm, error) {
+	documents = append([]Document(nil), documents...)
+	sort.SliceStable(documents, func(i, j int) bool { return documents[i].Path < documents[j].Path })
+	var result []StructuredNorm
+	for _, document := range documents {
+		decoder := xml.NewDecoder(strings.NewReader(document.XML))
+		decoder.Strict = false
+		decoder.Entity = xml.HTMLEntity
+		for {
+			token, err := decoder.Token()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return nil, fmt.Errorf("extract %s: %w", document.Path, err)
+			}
+			start, ok := token.(xml.StartElement)
+			if !ok || start.Name.Local != "norm" {
+				continue
+			}
+			var n norm
+			if err := decoder.DecodeElement(&n, &start); err != nil {
+				return nil, fmt.Errorf("extract %s: %w", document.Path, err)
+			}
+			text := strings.TrimSpace(renderNorm(n))
+			if text != "" {
+				text += "\n"
+			}
+			result = append(result, StructuredNorm{JurAbk: strings.TrimSpace(n.Metadata.JurAbk), EnBez: strings.TrimSpace(n.Metadata.EnBez), Title: strings.TrimSpace(fragmentText(n.Metadata.Title.XML)), XMLPath: document.Path, BuildDate: strings.TrimSpace(n.BuildDate), Text: text})
+		}
+	}
+	return result, nil
 }
 
 func RenderLaw(title string, documents []Document) (string, error) {

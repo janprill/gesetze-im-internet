@@ -40,6 +40,12 @@ type LawInfo struct {
 	Link  string
 }
 
+type Revision struct {
+	Hash        string
+	CommittedAt time.Time
+	Tags        []string
+}
+
 type tocItem struct {
 	Title string `xml:"title"`
 	Link  string `xml:"link"`
@@ -92,6 +98,93 @@ func (s *Store) RevisionForDate(ctx context.Context, date time.Time) (string, er
 		return "", fmt.Errorf("%w: no data commit at or before %s", errs.RevisionNotFound, date.Format("2006-01-02"))
 	}
 	return rev, nil
+}
+
+func (s *Store) Revisions(ctx context.Context) ([]Revision, error) {
+	if err := s.ensureRepository(); err != nil {
+		return nil, err
+	}
+	out, err := s.git(ctx, s.options.CacheDir, "log", "--reverse", "--format=%H%x09%cI", "refs/remotes/origin/"+s.options.DataBranch)
+	if err != nil {
+		return nil, err
+	}
+	tagsByRevision := make(map[string][]string)
+	tagOutput, err := s.git(ctx, s.options.CacheDir, "for-each-ref", "--format=%(refname:short)%09%(*objectname)%09%(objectname)", "refs/tags")
+	if err != nil {
+		return nil, err
+	}
+	for _, line := range strings.Split(strings.TrimSpace(tagOutput), "\n") {
+		parts := strings.Split(line, "\t")
+		if len(parts) != 3 {
+			continue
+		}
+		hash := parts[1]
+		if hash == "" {
+			hash = parts[2]
+		}
+		tagsByRevision[hash] = append(tagsByRevision[hash], parts[0])
+	}
+	var revisions []Revision
+	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+		parts := strings.Split(line, "\t")
+		if len(parts) != 2 {
+			continue
+		}
+		committedAt, err := time.Parse(time.RFC3339, parts[1])
+		if err != nil {
+			return nil, err
+		}
+		tags := append([]string(nil), tagsByRevision[parts[0]]...)
+		sort.Strings(tags)
+		revisions = append(revisions, Revision{Hash: parts[0], CommittedAt: committedAt, Tags: tags})
+	}
+	return revisions, nil
+}
+
+func (s *Store) ChangedLawIDs(ctx context.Context, fromRevision, toRevision string) ([]string, error) {
+	if err := s.ensureRepository(); err != nil {
+		return nil, err
+	}
+	out, err := s.git(ctx, s.options.CacheDir, "diff", "--name-only", fromRevision, toRevision, "--", "data/items", "data/toc.xml")
+	if err != nil {
+		return nil, err
+	}
+	changed := make(map[string]bool)
+	for _, path := range strings.Split(out, "\n") {
+		if id := itemIDFromPath(strings.TrimSpace(path)); id != "" {
+			changed[id] = true
+		}
+	}
+	fromLaws, err := s.ListLaws(ctx, fromRevision)
+	if err != nil {
+		return nil, err
+	}
+	toLaws, err := s.ListLaws(ctx, toRevision)
+	if err != nil {
+		return nil, err
+	}
+	fromByID := make(map[string]LawInfo, len(fromLaws))
+	for _, law := range fromLaws {
+		fromByID[law.ID] = law
+	}
+	toByID := make(map[string]LawInfo, len(toLaws))
+	for _, law := range toLaws {
+		toByID[law.ID] = law
+		if previous, exists := fromByID[law.ID]; !exists || previous != law {
+			changed[law.ID] = true
+		}
+	}
+	for id := range fromByID {
+		if _, exists := toByID[id]; !exists {
+			changed[id] = true
+		}
+	}
+	ids := make([]string, 0, len(changed))
+	for id := range changed {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids, nil
 }
 
 func (s *Store) FindLaw(ctx context.Context, rev, query string) (LawMatch, error) {

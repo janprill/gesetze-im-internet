@@ -158,6 +158,9 @@ Wichtige Methoden:
 - `client.LawNormTextWithoutUpdate(ctx, query, norm, date)` arbeitet offline und gibt token-sparsam nur eine einzelne Norm zurück.
 - `client.ListLawsWithoutUpdate(ctx, date, limit, offset)` listet Gesetze/Rechtsverordnungen offline aus `data/toc.xml`.
 - `client.SearchLawsWithoutUpdate(ctx, query, date, limit, offset)` sucht offline nach ID, Titel oder exakter XML-Abkürzung.
+- `client.ListSnapshotsWithoutUpdate(ctx)` listet lokale Daten-Commits samt Commitzeit und Tags.
+- `client.ChangedLawsWithoutUpdate(ctx, from, to)` bestimmt hinzugefügte, entfernte und geänderte Gesetze zwischen zwei lokalen Archivständen.
+- `client.StructuredLawWithoutUpdate(ctx, query, date)` liefert Normen batchfähig mit `jurabk`, `enbez`, Titel, XML-Pfad, `builddate` und Plaintext.
 
 `query` kann sein:
 
@@ -180,6 +183,8 @@ Typed Errors:
 - `gii.ErrNormNotFound`, wenn das Gesetz gefunden wurde, aber die angefragte Einzelnorm nicht existiert.
 - `gii.ErrRevisionNotFound`, wenn der Datenbranch für den Stichtag noch keinen Commit enthält.
 - `gii.ErrLocalCacheMissing`, wenn ein Offline-Aufruf ohne vorhandenen lokalen Checkout ausgeführt wird.
+
+Snapshot-, Delta- und Structured-Norm-Methoden führen niemals selbst `clone` oder `fetch` aus. Ihre Zeitangaben beschreiben beobachtete Archivierungsstände und keine automatisch behaupteten rechtlichen Geltungsintervalle.
 
 ### Offline-/Batch-Nutzung
 

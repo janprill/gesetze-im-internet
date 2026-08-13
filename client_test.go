@@ -280,6 +280,36 @@ func TestBDD_DiscoveryFindetBGBLokalOhneUpdate(t *testing.T) {
 	}
 }
 
+func TestBDD_OfflineSnapshotsDeltasUndStrukturierteNormen(t *testing.T) {
+	source := newDataBranchFixture(t,
+		version{date: "2024-01-01", paragraph: "Alte strukturierte Fassung."},
+		version{date: "2024-02-01", paragraph: "Neue strukturierte Fassung."},
+	)
+	repoDir := filepath.Join(t.TempDir(), ".gii-data")
+	updater := gii.New(gii.Options{RepositoryURL: source, RepositoryDir: repoDir})
+	if err := updater.Update(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	client := gii.New(gii.Options{RepositoryURL: "file:///does-not-exist", RepositoryDir: repoDir})
+
+	snapshots, err := client.ListSnapshotsWithoutUpdate(context.Background())
+	if err != nil || len(snapshots) != 2 || len(snapshots[0].Tags) != 1 {
+		t.Fatalf("snapshots=%#v error=%v", snapshots, err)
+	}
+	changed, err := client.ChangedLawsWithoutUpdate(context.Background(), mustDate(t, "2024-01-15"), mustDate(t, "2024-02-15"))
+	if err != nil || len(changed.Laws) != 1 || changed.Laws[0].ID != "bgb" {
+		t.Fatalf("changed=%#v error=%v", changed, err)
+	}
+	structured, err := client.StructuredLawWithoutUpdate(context.Background(), "BGB", mustDate(t, "2024-02-15"))
+	if err != nil || structured.ID != "bgb" || len(structured.Norms) != 1 {
+		t.Fatalf("structured=%#v error=%v", structured, err)
+	}
+	norm := structured.Norms[0]
+	if norm.JurAbk != "BGB" || norm.EnBez != "§ 1" || norm.Title != "Beginn der Rechtsfähigkeit" || norm.XMLPath == "" || norm.BuildDate != "20240101000000" || !strings.Contains(norm.Text, "Neue strukturierte Fassung.") {
+		t.Fatalf("norm=%#v", norm)
+	}
+}
+
 func TestBDD_MCPToolsLiefernHistorischenTextUndDiscovery(t *testing.T) {
 	source := newDataBranchFixture(t,
 		version{date: "2024-01-01", paragraph: "Alter MCP-Text."},
