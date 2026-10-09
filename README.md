@@ -286,23 +286,24 @@ Wichtige Flags:
 - `--addr`: Listen-Adresse für `gii mcp --transport http|sse`; Standard ist `127.0.0.1:8080`.
 - `--no-update`: vorhandenen Checkout offline verwenden.
 
-### Pi-Extension (gii-mcp)
+### Native MCP-Anbindung in Pi
 
-Das Verzeichnis [`pi-extension/gii-mcp/`](./pi-extension/gii-mcp) enthält eine Extension für den [pi coding agent](https://github.com/earendil-works/pi-mono), die den `gii mcp`-Server (stdio) bridge. Beim `session_start` spawnt sie `gii mcp --transport stdio --repo-dir <…>`, macht den JSON-RPC-Handshake und registriert alle vom Server annoncierten Tools per `pi.registerTool()` (mit `gii_`-Präfix: `gii_law_text`, `gii_norm_text`, `gii_list_laws`, `gii_search_laws`, `gii_update_cache`). Aufrufe werden 1:1 als `tools/call` weitergereicht; `session_shutdown` beendet den Kindprozess.
-
-Installation als global auto-discovered Extension (Symlink, eine Quelle):
+Pi 1.1.0 unterstützt MCP nativ. Der Server wird in `~/.pi/agent/mcp.json` eingebunden. Die bisherige [`pi-extension/gii-mcp/`](./pi-extension/gii-mcp) wird dafür nicht mehr benötigt:
 
 ```sh
-ln -s "$PWD/pi-extension/gii-mcp" ~/.pi/agent/extensions/gii-mcp
+pi mcp add gii --exposure deferred \
+  --description "Deutsche Bundesgesetze aus dem lokalen Archiv. norm_text für einzelne Vorschriften, search_laws zur ID-Suche." \
+  -- "$HOME/go/bin/gii" mcp --transport stdio --repo-dir "$PWD/.gii-data"
+pi mcp list
 ```
 
-Config (Env):
+Bei einer bestehenden Installation den Symlink `~/.pi/agent/extensions/gii-mcp` zur Sicherung außerhalb des Extensions-Verzeichnisses ablegen. Bridge und native Anbindung dürfen nicht gleichzeitig geladen werden. Anschließend `/reload` ausführen oder eine neue Pi-Sitzung starten. `/mcp` zeigt die Verbindungen und Fehler über die eingebaute Pi-Oberfläche. Server-stderr wird von Pi aufgefangen und nicht ungeordnet ins Terminal geschrieben.
 
-- `GII_BIN` — Pfad zum gii-Binary (Default: `~/go/bin/gii`).
-- `GII_MCP_REPO_DIR` — lokaler Daten-Checkout (Default: `~/age/gesetze-im-internet/.gii-data`).
-- `GII_MCP_ARGS` — zusätzliche Args, leerzeichengetrennt (selten nötig).
+Mit `deferred` lädt die eingebaute `tool_search` nur die jeweils benötigten Werkzeuge. Die Namen lauten jetzt `mcp__gii__norm_text`, `mcp__gii__search_laws`, `mcp__gii__list_laws`, `mcp__gii__law_text` und `mcp__gii__update_cache`. Für einzelne Vorschriften weiterhin `norm_text` bevorzugen. Bei `local_cache_missing` einmal explizit `update_cache` aufrufen und die Abfrage wiederholen.
 
-Hinweis: `gii_law_text` liefert ganze Gesetze als Plaintext (BGB = sehr groß). Für Einzelfragen `gii_norm_text` verwenden; für Volltexte das Ergebnis über `ctx_index` ablegen und per `ctx_search` abfragen, damit die Bytes nicht den Kontext fluten.
+Die bisherige persönliche Volltext-Schutzregel bleibt getrennt in `~/.pi/agent/extensions/legal-mcp-policy.ts` erhalten: kein `law_text` ohne `norm`, höchstens 20 Discovery-Treffer pro Aufruf und Auslassung von Ergebnissen über 32 KiB, auch bei verschachtelten Aufrufen aus codemode. Diese Policy startet keine Prozesse und schreibt keine Startmeldungen. Sie ist eine zusätzliche Schutzregel, kein Bestandteil von Pi oder dieses Servers. Pi selbst kürzt Modelltext über 20 KiB, lässt aber vollständige strukturierte Ergebnisse für codemode zu.
+
+Binary, Argumente und Datenpfad werden nun in `mcp.json` konfiguriert. Die alten Bridge-Variablen `GII_BIN`, `GII_MCP_REPO_DIR` und `GII_MCP_ARGS` werden von der nativen Anbindung nicht ausgewertet.
 
 ### Verhalten und Grenzen
 
